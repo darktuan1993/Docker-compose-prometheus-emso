@@ -1,0 +1,11 @@
+groups:
+- name: RAM Server
+  rules:
+  - alert: RamHigh
+    expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 50) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host out of memory (instance {{ $labels.instance }})
+      description: "Bộ nhớ ram đã đầy \n  Giá trị = {{ $value }}%\n "   

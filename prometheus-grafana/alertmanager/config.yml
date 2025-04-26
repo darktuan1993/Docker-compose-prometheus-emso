@@ -1,0 +1,65 @@
+global:
+  resolve_timeout: 30s
+
+receivers:
+- name: tuan-telegram
+  webhook_configs:
+  - url: 'http://10.0.0.232:9088/alert/-898458642'
+
+- name: System-Team
+  telegram_configs:
+  - api_url: https://api.telegram.org
+    bot_token: 6623410843:AAFXWQcnUEqQviOLo_YtxKqNoM5xw8Snoic
+    chat_id: -999710731
+    # template: /etc/alertmanager/template/template.tmpl
+    disable_notifications: false
+    http_config:
+      follow_redirects: true
+    send_resolved: true
+    parse_mode: 'HTML'
+
+
+
+route:
+  continue: false
+  group_by: ['instance']
+  group_interval: 30s
+  group_wait: 10s
+  repeat_interval: 1m
+  receiver: System-Team
+  routes:
+# RAM 
+    - match:
+        category: container-status
+        container_name: jira-cluster-isofh_node1_1
+        app_type: Server Nội Bộ Isofh
+      receiver: tuan-telegram
+      group_wait: 2s
+
+    - match:
+        category: logs
+        app_type: Server Nội Bộ Isofh
+      receiver: tuan-telegram
+      group_wait: 2s
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+templates:
+- '/etc/alertmanager/template/template.tmpl'
+
+
+
+
+# docker run -p 9101:9101 quay.io/prometheus/haproxy-exporter:latest --haproxy.scrape-uri="http://admin:1@10.0.0.10:9000/haproxy?stats;csv"
