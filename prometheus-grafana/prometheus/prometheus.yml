@@ -51,32 +51,24 @@ scrape_configs:
       - targets:
           [
             "172.16.0.98:7000",
-            "172.16.0.46:7000",
-            "172.16.0.235:7000",
           ]
         labels:
           export_type: "master_export"
       - targets:
           [
             "172.16.0.98:9000",
-            "172.16.0.46:9000",
-            "172.16.0.235:9000",
           ]
         labels:
           export_type: "tserver_export"
       - targets:
           [
             "172.16.0.98:12000",
-            "172.16.0.46:12000",
-            "172.16.0.235:12000",
           ]
         labels:
           export_type: "cql_export"
       - targets:
           [
             "172.16.0.98:13000",
-            "172.16.0.46:13000",
-            "172.16.0.235:13000",
           ]
         labels:
           export_type: "ysql_export"
