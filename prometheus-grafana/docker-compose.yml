@@ -3,8 +3,8 @@ version: "3.8"
 services:
   # Prometheus
   prometheus:
-    image: nguyenngochuy/prometheus-vip
-    container_name: sys-isofh-prometheus
+    image: prom/prometheus:v2.45.3
+    container_name: emso-prometheus
     restart: always
     user: "root"
     volumes:
@@ -17,22 +17,36 @@ services:
       - "--web.console.libraries=/usr/share/prometheus/console_libraries"
       - "--web.console.templates=/usr/share/prometheus/consoles"
       - "--web.enable-lifecycle"
-      # - "--web.config.file=/etc/prometheus/auth-web.yml"
+      - "--web.config.file=/etc/prometheus/auth-web.yml"
+      - "--storage.tsdb.retention.time=30d"
     ports:
-      - 9090:9090
+      - 32800:9090
     links:
       - alertmanager:alertmanager
   # Alert Manager
   alertmanager:
-    image: nguyenngochuy/alertmanager-vip
-    container_name: sys-isofh-alertmanager
+    image: prom/alertmanager:v0.27.0
+    container_name: emso-alertmanager
     restart: always
     ports:
-      - 9093:9093
+      - 32801:9093
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./alertmanager/:/etc/alertmanager/
     command:
       - "--config.file=/etc/alertmanager/config.yml"
       - "--storage.path=/alertmanager"
-      # - "--web.config.file=/etc/alertmanager/config/auth-web.yml"
+      - "--web.config.file=/etc/alertmanager/config/auth-web.yml"
+
+# Bot Alert Physical
+  prometheus-bot-container:
+    image: bachdangtuan/prom-golang-bot:latest
+    container_name: emso-vipbot-container
+
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./telegrambot-container/:/etc/telegrambot/
+      - ./telegrambot-container/config.yaml:/config.yaml  
+    ports:
+      - 9088:9087
+    restart: always
