@@ -22,7 +22,7 @@ receivers:
 
 route:
   continue: false
-  group_by: ['instance','job','category','container_name','app','hostname','alertname']
+  group_by: ['instance','job','category','container_name','app','hostname','alertname','export_type','env']
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 3h
@@ -52,7 +52,3 @@ route:
 templates:
 - '/etc/alertmanager/template/template.tmpl'
 
-
-
-
-# docker run -p 9101:9101 quay.io/prometheus/haproxy-exporter:latest --haproxy.scrape-uri="http://admin:1@10.0.0.10:9000/haproxy?stats;csv"
