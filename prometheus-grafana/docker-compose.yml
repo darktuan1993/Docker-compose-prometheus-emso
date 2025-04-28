@@ -7,7 +7,7 @@ services:
     container_name: emso-prometheus
     restart: always
     user: "root"
-    mem_limit: 20g 
+    # mem_limit: 20g 
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./prometheus:/etc/prometheus/
