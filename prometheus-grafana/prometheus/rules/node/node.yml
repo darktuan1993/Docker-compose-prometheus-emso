@@ -1,7 +1,7 @@
 groups:
 - name: server-status
   rules:
-  - alert: Máy chủ không hoạt động
+  - alert: STATUS SERVER
     expr: up == 0
     for: 2m
     labels:
