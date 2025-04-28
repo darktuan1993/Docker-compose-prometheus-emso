@@ -1,0 +1,11 @@
+groups:
+- name: server-status
+  rules:
+  - alert: Máy chủ không hoạt động
+    expr: up == 0
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Instance {{ $labels.instance }} down"
+      description: "The instance {{ $labels.instance }} is down for more than 2 minutes."

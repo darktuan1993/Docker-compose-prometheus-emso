@@ -50,5 +50,5 @@ services:
       - ./telegrambot-container/:/etc/telegrambot/
       - ./telegrambot-container/config.yaml:/config.yaml  
     ports:
-      - 9088:9087
+      - 32802:9087
     restart: always
