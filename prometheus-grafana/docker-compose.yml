@@ -29,6 +29,7 @@ services:
     image: prom/alertmanager:v0.27.0
     container_name: emso-alertmanager
     restart: always
+    mem_limit: 100m 
     ports:
       - 32801:9093
     volumes:
