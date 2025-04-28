@@ -6,7 +6,7 @@ global:
     monitor: "Emso-Container"
 
 rule_files:
-  - "./rules/container-demo.yml"
+  - "./rules/node/node.yml"
 
 # alert
 alerting:
