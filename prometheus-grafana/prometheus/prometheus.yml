@@ -6,7 +6,7 @@ global:
     monitor: "Emso-Container"
 
 rule_files:
-  - "./rules/servertest/container-demo.yml"
+  - "./rules/container-demo.yml"
 
 # alert
 alerting:
@@ -16,7 +16,7 @@ alerting:
         - targets: ["172.16.0.225:32801"]
       basic_auth:
         username: admin
-        password: vietnam@1234
+        password: Emso@Uddnfk2334
 
 scrape_configs:
   - job_name: "http_sd_config"
