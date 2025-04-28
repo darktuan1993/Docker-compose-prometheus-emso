@@ -1,21 +1,21 @@
 {{- if eq .Status "resolved" }}
 ✅💙 PHỤC HỒI 💙✅
----------------
+-----
 📝 Nội dung: {{ .CommonAnnotations.summary }}
 🛑 Nhóm Cảnh báo: {{ .CommonLabels.alertname }}
 💻 Máy Chủ: {{ .CommonLabels.instance }}
 📈 Trạng Thái: {{ .Status | str_UpperCase }}
----------------
+-----
 {{- end }}
 
 {{- if eq .Status "firing" }}
 🚨 CẢNH BÁO SỰ CỐ 🚨
----------------
+-----
 Tên Máy Chủ: {{ if .CommonLabels.hostname }}<code>{{ .CommonLabels.hostname }}</code>{{ else }}N/A{{ end }}
 Mức Độ: 🔥 <code>{{ .CommonLabels.severity | str_UpperCase }}</code> 🔥
 Thông Tin: {{ .CommonAnnotations.description }}
 Nhóm Cảnh báo: {{ .CommonLabels.alertname }}
----------------
+-----
 {{- range .Alerts }}
 🕑 THỜI GIAN XẢY RA: <code>{{ .StartsAt | str_FormatDate }}</code>
 {{- end }}
