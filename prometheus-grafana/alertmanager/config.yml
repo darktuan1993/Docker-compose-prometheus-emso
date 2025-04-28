@@ -26,7 +26,7 @@ route:
   group_interval: 30s
   group_wait: 10s
   repeat_interval: 1m
-  receiver: System-Team
+  receiver: tuan-telegram
   routes:
     - match:
         job: mongo-exporter
