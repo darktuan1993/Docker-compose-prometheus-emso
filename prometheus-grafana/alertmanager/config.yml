@@ -4,7 +4,7 @@ global:
 receivers:
 - name: tuan-telegram
   webhook_configs:
-  - url: 'http://172.16.0.225:32802/alert/-7658537112'
+  - url: 'http://172.16.0.225:32802/alert/-4779449673'
 
 # - name: System-Team
 #   telegram_configs:
@@ -22,7 +22,7 @@ receivers:
 
 route:
   continue: false
-  group_by: ['instance','job','category','container_name','app','hostname','alertname','export_type','env']
+  group_by: ['instance','job','category','container_name','app','hostname','alertname','export_type']
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 3h
