@@ -16,6 +16,6 @@ Mức Độ: 🔥 <code>{{ .CommonLabels.severity | str_UpperCase }}</code> 🔥
 Thông Tin: {{ .CommonAnnotations.description }}
 -----
 {{- range .Alerts }}
-🕑 THỜI GIAN XẢY RA: <code>{{ .StartsAt | str_FormatDate }}</code>
+🕑 TIME ISSUE: <code>{{ .StartsAt | str_FormatDate }}</code>
 {{- end }}
 {{- end }}
