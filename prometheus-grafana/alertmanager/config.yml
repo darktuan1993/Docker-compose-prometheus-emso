@@ -4,7 +4,7 @@ global:
 receivers:
 - name: tuan-telegram
   webhook_configs:
-  - url: 'http://172.16.0.225:32802/alert/-4659848306'
+  - url: 'http://172.16.0.225:32802/alert/-7658537112'
 
 # - name: System-Team
 #   telegram_configs:
