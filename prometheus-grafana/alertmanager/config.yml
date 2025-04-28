@@ -29,7 +29,7 @@ route:
   receiver: tuan-telegram
   routes:
     - match:
-        job: mongo-exporter
+        job: node-exporter
       receiver: tuan-telegram
       group_wait: 2s
 
