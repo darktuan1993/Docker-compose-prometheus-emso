@@ -9,14 +9,13 @@
 {{- end }}
 
 {{- if eq .Status "firing" }}
-🔥🚨 CẢNH BÁO SỰ CỐ 🚨🔥
+🚨 CẢNH BÁO SỰ CỐ 🚨
 ------------------------------------------------------
-📝 Nội dung: {{ .CommonAnnotations.summary }}
-🛑 Nhóm Cảnh báo: {{ .CommonLabels.alertname }}
-🏢 Hệ Thống: {{ if .CommonLabels.hostname }}<code>{{ .CommonLabels.hostname }}</code>{{ else }}N/A{{ end }}
-💻 Máy Chủ: {{ .CommonLabels.instance }}
-ℹ️ Thông Tin: {{ .CommonAnnotations.description }}
-⚡ Mức Độ: 🔥 <code>{{ .CommonLabels.severity | str_UpperCase }}</code> 🔥
+Nội dung: {{ .CommonAnnotations.summary }}
+Nhóm Cảnh báo: {{ .CommonLabels.alertname }}
+Tên Máy Chủ: {{ if .CommonLabels.hostname }}<code>{{ .CommonLabels.hostname }}</code>{{ else }}N/A{{ end }}
+Thông Tin: {{ .CommonAnnotations.description }}
+Mức Độ: 🔥 <code>{{ .CommonLabels.severity | str_UpperCase }}</code> 🔥
 ------------------------------------------------------
 {{- range .Alerts }}
 🕑 THỜI GIAN XẢY RA: <code>{{ .StartsAt | str_FormatDate }}</code>
