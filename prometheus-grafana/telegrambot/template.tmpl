@@ -9,12 +9,11 @@
 {{- end }}
 
 {{- if eq .Status "firing" }}
-🚨 CẢNH BÁO SỰ CỐ 🚨
+🚨 {{ .CommonLabels.alertname }} ALERT 🚨
 -----
 Tên Máy Chủ: {{ if .CommonLabels.hostname }}<code>{{ .CommonLabels.hostname }}</code>{{ else }}N/A{{ end }}
 Mức Độ: 🔥 <code>{{ .CommonLabels.severity | str_UpperCase }}</code> 🔥
 Thông Tin: {{ .CommonAnnotations.description }}
-Nhóm Cảnh báo: {{ .CommonLabels.alertname }}
 -----
 {{- range .Alerts }}
 🕑 THỜI GIAN XẢY RA: <code>{{ .StartsAt | str_FormatDate }}</code>
