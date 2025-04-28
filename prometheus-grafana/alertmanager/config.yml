@@ -6,17 +6,17 @@ receivers:
   webhook_configs:
   - url: 'http://172.16.0.225:32802/alert/-4659848306'
 
-- name: System-Team
-  telegram_configs:
-  - api_url: https://api.telegram.org
-    bot_token: 6623410843:AAFXWQcnUEqQviOLo_YtxKqNoM5xw8Snoic
-    chat_id: -999710731
-    # template: /etc/alertmanager/template/template.tmpl
-    disable_notifications: false
-    http_config:
-      follow_redirects: true
-    send_resolved: true
-    parse_mode: 'HTML'
+# - name: System-Team
+#   telegram_configs:
+#   - api_url: https://api.telegram.org
+#     bot_token: 6623410843:AAFXWQcnUEqQviOLo_YtxKqNoM5xw8Snoic
+#     chat_id: -999710731
+#     # template: /etc/alertmanager/template/template.tmpl
+#     disable_notifications: false
+#     http_config:
+#       follow_redirects: true
+#     send_resolved: true
+#     parse_mode: 'HTML'
 
 
 
@@ -28,17 +28,8 @@ route:
   repeat_interval: 1m
   receiver: System-Team
   routes:
-# RAM 
     - match:
-        category: container-status
-        container_name: jira-cluster-isofh_node1_1
-        app_type: Server Nội Bộ Isofh
-      receiver: tuan-telegram
-      group_wait: 2s
-
-    - match:
-        category: logs
-        app_type: Server Nội Bộ Isofh
+        job: mongo-exporter
       receiver: tuan-telegram
       group_wait: 2s
 
