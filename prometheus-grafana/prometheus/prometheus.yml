@@ -1,7 +1,8 @@
 # my global config
 global:
   scrape_interval: 1m
-  evaluation_interval: 15s
+  scrape_timeout: 20s
+  evaluation_interval: 1m
   external_labels:
     monitor: "Emso-Container"
 
