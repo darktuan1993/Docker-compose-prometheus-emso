@@ -21,7 +21,7 @@ alerting:
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:32800']
+      - targets: ['172.16.0.225:32800']
         
   - job_name: "http_sd_config"
     scrape_interval: 15s
