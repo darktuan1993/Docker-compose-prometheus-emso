@@ -27,8 +27,6 @@ scrape_configs:
       password: "Emso@Uddnfk2334"
         
   - job_name: "http_sd_config"
-    scrape_interval: 60s
-    scrape_timeout: 30s
     metric_relabel_configs:
       - source_labels: ["__name__"]
         regex: "go_.*|process_.*|grpc_.*|http_.*|.*_bucket|.*_quantile"
