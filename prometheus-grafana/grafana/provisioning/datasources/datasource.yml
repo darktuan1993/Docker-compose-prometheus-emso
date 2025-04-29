@@ -18,11 +18,11 @@ datasources:
   # <int> org id. will default to orgId 1 if not specified
   orgId: 1
   # <string> url
-  url: http://prometheus:9090
+  url: http://172.16.0.225:32800
   # <string> database password, if used
-  password:
+  password: admin
   # <string> database user, if used
-  user:
+  user: Emso@Uddnfk2334
   # <string> database name, if used
   database:
   # <bool> enable/disable basic auth
