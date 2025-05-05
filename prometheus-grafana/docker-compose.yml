@@ -19,7 +19,7 @@ services:
       - "--web.console.templates=/usr/share/prometheus/consoles"
       - "--web.enable-lifecycle"
       - "--web.config.file=/etc/prometheus/auth-web.yml"
-      - "--storage.tsdb.retention.time=7d"
+      - "--storage.tsdb.retention.time=5d"
       - "--storage.tsdb.retention.size=50GB"
       # - "--storage.tsdb.min-block-duration=2h"
       # - "--storage.tsdb.max-block-duration=2h"
