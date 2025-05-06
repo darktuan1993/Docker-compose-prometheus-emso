@@ -84,5 +84,5 @@ services:
       - ./telegrambot-kubernetes/:/etc/telegrambot/
       - ./telegrambot-kubernetes/config.yaml:/config.yaml  
     ports:
-      - 32802:9087
+      - 32803:9087
     restart: always
