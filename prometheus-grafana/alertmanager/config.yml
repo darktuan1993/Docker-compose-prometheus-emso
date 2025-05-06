@@ -17,7 +17,7 @@ receivers:
 
 route:
   continue: false
-  group_by: ['instance','job','category','container_name','app','hostname','alertname','export_type']
+  group_by: ['instance','job','category','container_name','app','hostname','alertname','export_type','namespace','pod','uid']
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 1h
