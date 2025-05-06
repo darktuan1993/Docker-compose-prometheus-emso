@@ -54,3 +54,35 @@ services:
     ports:
       - 32802:9087
     restart: always
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: emso-grafana
+    user: "root"
+    restart: always
+    environment:
+      GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-simple-json-datasource"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./data-prometheus-grafana/grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+    ports:
+      - 3000:3000
+    depends_on:
+      - prometheus
+
+
+# Bot Alert Kubernetes
+  prometheus-bot-kubernetes:
+    image: bachdangtuan/prom-golang-bot:latest
+    container_name: emso-vipbot-kubernetes
+    mem_limit: 100m 
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./telegrambot-kubernetes/:/etc/telegrambot/
+      - ./telegrambot-kubernetes/config.yaml:/config.yaml  
+    ports:
+      - 32802:9087
+    restart: always
