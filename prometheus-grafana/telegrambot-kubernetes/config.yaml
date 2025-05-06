@@ -1,5 +1,5 @@
 # bot Tuấn
-telegram_token: "7746150947:AAFndI-rF1uJg3TgPsAGX0dQTBXlIEKFcpY"
+telegram_token: "7724642720:AAEyRY44eCt7qZh-qGO29QVVnvhj2xrLeJc"
 template_path: "/etc/telegrambot/template.tmpl"
 time_zone: "Asia/Ho_Chi_Minh"
 split_token: "|"
