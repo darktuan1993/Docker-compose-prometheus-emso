@@ -11,7 +11,10 @@
 {{- if eq .Status "firing" }}
 🚨 {{ .CommonLabels.alertname }} ALERT 🚨
 -----
-
+Tên POD: {{ if .CommonLabels.pod }}<code>{{ .CommonLabels.pod }}</code>{{ else }}N/A{{ end }}
+Namespace: {{ if .CommonLabels.namespace }}<code>{{ .CommonLabels.namespace }}</code>{{ else }}N/A{{ end }}
+Mức Độ: 🔥 <code>{{ .CommonLabels.severity | str_UpperCase }}</code> 🔥
+Thông Tin: {{ .CommonAnnotations.summary }}
 -----
 {{- range .Alerts }}
 🕑 TIME ISSUE: <code>{{ .StartsAt | str_FormatDate }}</code>
