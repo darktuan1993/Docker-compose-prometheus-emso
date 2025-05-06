@@ -11,9 +11,7 @@
 {{- if eq .Status "firing" }}
 🚨 {{ .CommonLabels.alertname }} ALERT 🚨
 -----
-Tên Máy Chủ: {{ if .CommonLabels.hostname }}<code>{{ .CommonLabels.hostname }}</code>{{ else }}N/A{{ end }}
-Mức Độ: 🔥 <code>{{ .CommonLabels.severity | str_UpperCase }}</code> 🔥
-Thông Tin: {{ .CommonAnnotations.description }}
+
 -----
 {{- range .Alerts }}
 🕑 TIME ISSUE: <code>{{ .StartsAt | str_FormatDate }}</code>
