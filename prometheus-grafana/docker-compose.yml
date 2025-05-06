@@ -55,23 +55,23 @@ services:
       - 32802:9087
     restart: always
 
-  grafana:
-    image: grafana/grafana:latest
-    container_name: emso-grafana
-    user: "root"
-    restart: always
-    environment:
-      GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-simple-json-datasource"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ./data-prometheus-grafana/grafana_data:/var/lib/grafana
-      - ./grafana/provisioning/:/etc/grafana/provisioning/
-    env_file:
-      - ./grafana/config.monitoring
-    ports:
-      - 3000:3000
-    depends_on:
-      - prometheus
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: emso-grafana
+  #   user: "root"
+  #   restart: always
+  #   environment:
+  #     GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-simple-json-datasource"
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - ./data-prometheus-grafana/grafana_data:/var/lib/grafana
+  #     - ./grafana/provisioning/:/etc/grafana/provisioning/
+  #   env_file:
+  #     - ./grafana/config.monitoring
+  #   ports:
+  #     - 3000:3000
+  #   depends_on:
+  #     - prometheus
 
 
 # Bot Alert Kubernetes
