@@ -33,6 +33,9 @@ route:
     - match_re:
         job: "kubernetes-pods|kubernetes-pods-slow|kubernetes-nodes|kubernetes-service-endpoints|kubernetes-apiservers|kubernetes-nodes-cadvisor|prometheus"
       receiver: k8s-telegram
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 1h
 
 
 
