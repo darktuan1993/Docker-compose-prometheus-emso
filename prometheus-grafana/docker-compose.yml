@@ -90,12 +90,12 @@ services:
 # Bot Alert DB
   prometheus-bot-yugabyte:
     image: bachdangtuan/prom-golang-bot:latest
-    container_name: emso-vipbot-databse
+    container_name: emso-vipbot-database
     mem_limit: 100m 
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./telegrambot/:/etc/telegrambot/
-      - ./telegrambot/config.yaml:/config.yaml  
+      - ./telegrambot-db/:/etc/telegrambot/
+      - ./telegrambot-db/config.yaml:/config.yaml  
     ports:
       - 32804:9087
     restart: always
