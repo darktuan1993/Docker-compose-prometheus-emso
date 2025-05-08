@@ -1,0 +1,99 @@
+groups:
+- name: server-status
+  rules:
+  - alert: Yugabyte Master Down
+    expr: up{node_prefix="cluster-1", instance=~".*:7000"} == 0
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Máy chủ {{ $labels.instance }} không phản hồi"
+      description: "Máy chủ Yugabyte Master tại {{ $labels.instance }} đã không phản hồi trong 2 phút. Kiểm tra kết nối hoặc trạng thái dịch vụ."
+
+  - alert: (Yugabyte) Master Down
+    expr: up{node_prefix="cluster-1", instance=~".*:9000"} == 0
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Máy chủ {{ $labels.instance }} không phản hồi"
+      description: "Máy chủ Yugabyte Master tại {{ $labels.instance }} đã không phản hồi trong 2 phút. Kiểm tra kết nối hoặc trạng thái dịch vụ."
+
+  - alert: YugabyteLechThoiGianMasterVaMayChu
+    expr: hybrid_clock_error{export_type="master_export"} > 500000  # 500ms
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Sai lệch đồng hồ hệ thống vượt quá giới hạn tại {{ $labels.instance }}"
+      description: >
+        Node Master {{ $labels.instance }} có sai số thời gian (clock error) lớn hơn 500ms trong hơn 2 phút. Điều này có thể ảnh hưởng tới đồng bộ dữ liệu, tính nhất quán hoặc gây lỗi giao dịch phân tán.
+        ▸ Giá trị hiện tại: {{ $value }} microseconds
+
+  - alert: YugabyteLechThoiGianTserverVaMayChu
+    expr: hybrid_clock_error{export_type="tserver_export"} > 500000  # 500ms
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Sai lệch đồng hồ hệ thống vượt quá giới hạn tại {{ $labels.instance }}"
+      description: >
+        Node TServer {{ $labels.instance }} có sai số thời gian (clock error) lớn hơn 500ms trong hơn 2 phút. Điều này có thể ảnh hưởng tới đồng bộ dữ liệu, tính nhất quán hoặc gây lỗi giao dịch phân tán.
+        ▸ Giá trị hiện tại: {{ $value }} microseconds
+
+
+  - alert: LechGioHeThongMASTER
+    expr: hybrid_clock_skew{export_type="master_export"} > 0  # 50ms
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Sai lệch đồng hồ trên node Master {{ $labels.instance }} vượt quá giới hạn"
+      description: >
+        Node Master {{ $labels.instance }} có sai lệch thời gian (clock skew) lớn hơn 50ms trong hơn 2 phút. Điều này có thể ảnh hưởng tới việc đồng bộ dữ liệu, tính nhất quán, hoặc gây lỗi giao dịch phân tán.
+        ▸ Giá trị hiện tại: {{ $value }} microseconds
+
+
+  - alert: LechGioHeThongTSERVER
+    expr: hybrid_clock_skew{export_type="tserver_export"} > 0  # 50ms
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Sai lệch đồng hồ trên node TServer {{ $labels.instance }} vượt quá giới hạn"
+      description: >
+        Node TServer {{ $labels.instance }} có sai lệch thời gian (clock skew) lớn hơn 50ms trong hơn 2 phút. Điều này có thể ảnh hưởng tới tính đồng bộ dữ liệu và độ nhất quán trong giao dịch phân tán.
+        ▸ Giá trị hiện tại: {{ $value }} microseconds
+
+  - alert: YugabyteYSQLKetNoiMoiTangDotBien
+    expr: rate(yb_ysqlserver_new_connection_total{export_type="ysql_export"}[5m]) > 50
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Tốc độ tạo kết nối mới tới YSQL trên {{ $labels.instance }} cao bất thường"
+      description: >
+        Node {{ $labels.instance }} đang tạo hơn 50 kết nối mới mỗi giây tới YSQL trong 5 phút qua. Điều này có thể do ứng dụng không sử dụng connection pool hoặc bị truy cập bất thường.
+        ▸ Tốc độ kết nối hiện tại: {{ $value }} kết nối/giây
+
+  - alert: YugabyteYSQLKetNoiHienTaiCao
+    expr: yb_ysqlserver_connection_total{export_type="ysql_export"} > 800
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Số kết nối YSQL trên {{ $labels.instance }} đang ở mức cao"
+      description: >
+        Node {{ $labels.instance }} đang duy trì hơn 800 kết nối tới YSQL trong hơn 2 phút. Có thể do ứng dụng giữ kết nối quá lâu hoặc không dùng pool.
+        ▸ Số kết nối hiện tại: {{ $value }}
+
+  - alert: YugabyteYSQLBiTuChoiKetNoi
+    expr: rate(yb_ysqlserver_connection_over_limit_total{export_type="ysql_export"}[5m]) > 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "YSQL trên node {{ $labels.instance }} đang từ chối kết nối mới"
+      description: >
+        Node {{ $labels.instance }} đang từ chối các kết nối YSQL vì đã vượt quá giới hạn max_connections trong 5 phút gần đây.
+        ▸ Số lần từ chối mỗi giây: {{ $value }}
