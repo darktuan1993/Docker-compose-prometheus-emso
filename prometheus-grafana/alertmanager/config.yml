@@ -10,6 +10,11 @@ receivers:
   webhook_configs:
   - url: 'http://172.16.0.225:32803/alert/-4661808872'
 
+- name: database-telegram
+  webhook_configs:
+  - url: 'http://172.16.0.225:32804/alert/-4718226698'
+
+
 - name: null-receiver
   webhook_configs: []   # không gửi đi đâu cả
 

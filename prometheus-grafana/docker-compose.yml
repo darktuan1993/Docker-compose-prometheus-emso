@@ -86,3 +86,16 @@ services:
     ports:
       - 32803:9087
     restart: always
+
+# Bot Alert DB
+  prometheus-bot-container:
+    image: bachdangtuan/prom-golang-bot:latest
+    container_name: emso-vipbot-databse
+    mem_limit: 100m 
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./telegrambot/:/etc/telegrambot/
+      - ./telegrambot/config.yaml:/config.yaml  
+    ports:
+      - 32804:9087
+    restart: always
