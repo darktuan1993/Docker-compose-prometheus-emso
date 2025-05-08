@@ -1,5 +1,5 @@
 groups:
-- name: server-status
+- name: server-yugabyte
   rules:
   - alert: Yugabyte Master Down
     expr: up{node_prefix="cluster-1", instance=~".*:7000"} == 0
