@@ -88,7 +88,7 @@ services:
     restart: always
 
 # Bot Alert DB
-  prometheus-bot-container:
+  prometheus-bot-yugabyte:
     image: bachdangtuan/prom-golang-bot:latest
     container_name: emso-vipbot-databse
     mem_limit: 100m 
