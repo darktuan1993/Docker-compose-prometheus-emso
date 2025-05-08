@@ -2,7 +2,7 @@ groups:
 - name: server-yugabyte
   rules:
   - alert: Yugabyte Master Down
-    expr: up{node_prefix="cluster-1", instance=~".*:7000",job="yugabytedb"} == 0
+    expr: up{node_prefix="cluster-1", instance=~".*:7000", job="yugabytedb"} == 0
     for: 2m
     labels:
       severity: critical
@@ -11,7 +11,7 @@ groups:
       description: "Máy chủ Yugabyte Master tại {{ $labels.instance }} đã không phản hồi trong 2 phút. Kiểm tra kết nối hoặc trạng thái dịch vụ."
 
   - alert: (Yugabyte) Master Down
-    expr: up{node_prefix="cluster-1", instance=~".*:9000",job="yugabytedb"} == 0
+    expr: up{node_prefix="cluster-1", instance=~".*:9000"} == 0
     for: 2m
     labels:
       severity: critical
@@ -20,7 +20,7 @@ groups:
       description: "Máy chủ Yugabyte Master tại {{ $labels.instance }} đã không phản hồi trong 2 phút. Kiểm tra kết nối hoặc trạng thái dịch vụ."
 
   - alert: YugabyteLechThoiGianMasterVaMayChu
-    expr: hybrid_clock_error{export_type="master_export", job="yugabytedb"} > 500000  # 500ms
+    expr: hybrid_clock_error{export_type="master_export"} > 500000  # 500ms
     for: 2m
     labels:
       severity: critical
@@ -31,7 +31,7 @@ groups:
         ▸ Giá trị hiện tại: {{ $value }} microseconds
 
   - alert: YugabyteLechThoiGianTserverVaMayChu
-    expr: hybrid_clock_error{export_type="tserver_export",job="yugabytedb"} > 500000  # 500ms
+    expr: hybrid_clock_error{export_type="tserver_export"} > 500000  # 500ms
     for: 2m
     labels:
       severity: critical
@@ -43,7 +43,7 @@ groups:
 
 
   - alert: LechGioHeThongMASTER
-    expr: hybrid_clock_skew{export_type="master_export", job="yugabytedb"} > 0  # 50ms
+    expr: hybrid_clock_skew{export_type="master_export"} > 0  # 50ms
     for: 2m
     labels:
       severity: critical
@@ -55,7 +55,7 @@ groups:
 
 
   - alert: LechGioHeThongTSERVER
-    expr: hybrid_clock_skew{export_type="tserver_export",job="yugabytedb"} > 0  # 50ms
+    expr: hybrid_clock_skew{export_type="tserver_export"} > 0  # 50ms
     for: 2m
     labels:
       severity: critical
@@ -66,7 +66,7 @@ groups:
         ▸ Giá trị hiện tại: {{ $value }} microseconds
 
   - alert: YugabyteYSQLKetNoiMoiTangDotBien
-    expr: rate(yb_ysqlserver_new_connection_total{export_type="ysql_export"}[5m],job="yugabytedb") > 50
+    expr: rate(yb_ysqlserver_new_connection_total{export_type="ysql_export"}[5m]) > 50
     for: 2m
     labels:
       severity: warning
@@ -77,7 +77,7 @@ groups:
         ▸ Tốc độ kết nối hiện tại: {{ $value }} kết nối/giây
 
   - alert: YugabyteYSQLKetNoiHienTaiCao
-    expr: yb_ysqlserver_connection_total{export_type="ysql_export",job="yugabytedb"} > 800
+    expr: yb_ysqlserver_connection_total{export_type="ysql_export"} > 800
     for: 2m
     labels:
       severity: warning
@@ -88,7 +88,7 @@ groups:
         ▸ Số kết nối hiện tại: {{ $value }}
 
   - alert: YugabyteYSQLBiTuChoiKetNoi
-    expr: rate(yb_ysqlserver_connection_over_limit_total{export_type="ysql_export",job="yugabytedb"}[5m]) > 0
+    expr: rate(yb_ysqlserver_connection_over_limit_total{export_type="ysql_export"}[5m]) > 0
     for: 1m
     labels:
       severity: critical
