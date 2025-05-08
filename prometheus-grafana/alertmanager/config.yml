@@ -43,7 +43,7 @@ route:
       repeat_interval: 1h
 
     - match_re:
-        job: yugabytedb
+        job: "yugabytedb|node_prefix"
       receiver: database-telegram
       # group_wait: 30s
       # group_interval: 5m

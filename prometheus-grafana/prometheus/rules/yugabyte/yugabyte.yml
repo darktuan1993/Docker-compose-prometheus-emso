@@ -20,7 +20,7 @@ groups:
       description: "Máy chủ Yugabyte Master tại {{ $labels.instance }} đã không phản hồi trong 2 phút. Kiểm tra kết nối hoặc trạng thái dịch vụ."
 
   - alert: YugabyteLechThoiGianMasterVaMayChu
-    expr: hybrid_clock_error{export_type="master_export"} > 500000  # 500ms
+    expr: hybrid_clock_error{export_type="master_export",job="yugabytedb"} > 500000  # 500ms
     for: 2m
     labels:
       severity: critical
@@ -31,7 +31,7 @@ groups:
         ▸ Giá trị hiện tại: {{ $value }} microseconds
 
   - alert: YugabyteLechThoiGianTserverVaMayChu
-    expr: hybrid_clock_error{export_type="tserver_export"} > 500000  # 500ms
+    expr: hybrid_clock_error{export_type="tserver_export", job='yugabytedb'} > 500000 # 500ms
     for: 2m
     labels:
       severity: critical
@@ -55,7 +55,7 @@ groups:
 
 
   - alert: LechGioHeThongTSERVER
-    expr: hybrid_clock_skew{export_type="tserver_export"} > 0  # 50ms
+    expr: hybrid_clock_skew{export_type="tserver_export", job='yugabytedb'} > 0  # 50ms
     for: 2m
     labels:
       severity: critical
