@@ -2,7 +2,7 @@ groups:
   - name: redis-alerts
     rules:
       # 1. Cảnh báo Redis có client bị block
-      - alert: RedisBlockedClients
+      - alert: (Redis)-BlockedClients
         expr: redis_blocked_clients{job='redis-exporter'} > 0
         for: 1m
         labels:
@@ -12,7 +12,7 @@ groups:
           description: "Phát hiện ít nhất một client đang bị block. Cần kiểm tra pipeline hoặc slow command."
 
       # 2. Cảnh báo nếu AOF rewrite đang chạy quá lâu
-      - alert: RedisAOFRewriteTooLong
+      - alert: (Redis)-AOFRewriteTooLong
         expr: redis_aof_last_rewrite_duration_sec{job='redis-exporter'} > 300
         for: 2m
         labels:
@@ -22,7 +22,7 @@ groups:
           description: "Quá trình AOF rewrite gần nhất mất hơn 5 phút. Có thể do file AOF quá lớn."
 
       # 3. Cảnh báo trạng thái AOF ghi lỗi
-      - alert: RedisAOFWriteFailed
+      - alert: (Redis)-AOFWriteFailed
         expr: redis_aof_last_write_status{job='redis-exporter'} == 0
         for: 30s
         labels:
@@ -32,7 +32,7 @@ groups:
           description: "AOF không ghi thành công trong lần ghi gần nhất. Cần kiểm tra đĩa hoặc hệ thống."
 
       # 4. Cảnh báo memory fragmentation cao
-      - alert: RedisMemoryFragmentationHigh
+      - alert: (Redis)-MemoryFragmentationHigh
         expr: redis_allocator_frag_ratio{job='redis-exporter'} > 1.5
         for: 3m
         labels:
@@ -42,7 +42,7 @@ groups:
           description: "Tỷ lệ fragmentation của bộ nhớ Redis vượt 1.5. Cần xem xét cấu hình hoặc defrag."
 
       # 5. Cảnh báo defragmentation đang chạy liên tục
-      - alert: RedisDefragmentationRunningTooLong
+      - alert: (Redis)-DefragmentationRunningTooLong
         expr: redis_active_defrag_running{job='redis-exporter'} == 1
         for: 10m
         labels:
@@ -51,7 +51,7 @@ groups:
           summary: "Redis đang chạy defragmentation liên tục"
           description: "Quá trình defrag đang chạy hơn 10 phút. Có thể đang dọn bộ nhớ hoặc có lỗi tối ưu hóa."
       # 1. Cảnh báo client bị block
-      - alert: RedisBlockedClients
+      - alert: (Redis)-BlockedClients
         expr: redis_blocked_clients{job='redis-exporter'} > 0
         for: 1m
         labels:
@@ -61,7 +61,7 @@ groups:
           description: "Một hoặc nhiều client đang bị block. Kiểm tra tình trạng pipeline hoặc slow command."
 
       # 2. Ghi AOF thất bại
-      - alert: RedisAOFWriteFailed
+      - alert: (Redis)-AOFWriteFailed
         expr: redis_aof_last_write_status{job='redis-exporter'} == 0
         for: 30s
         labels:
@@ -71,7 +71,7 @@ groups:
           description: "Trạng thái ghi AOF gần nhất không thành công. Cần kiểm tra lỗi ổ đĩa hoặc cấu hình."
 
       # 3. Thời gian rewrite AOF quá lâu
-      - alert: RedisAOFRewriteTooLong
+      - alert: (Redis)-AOFRewriteTooLong
         expr: redis_aof_last_rewrite_duration_sec{job='redis-exporter'} > 300
         for: 2m
         labels:
@@ -81,7 +81,7 @@ groups:
           description: "Quá trình rewrite AOF mất hơn 5 phút, có thể do AOF quá lớn hoặc thiếu tài nguyên hệ thống."
 
       # 4. Đang defragment lâu
-      - alert: RedisDefragmentationRunningTooLong
+      - alert: (Redis)-DefragmentationRunningTooLong
         expr: redis_active_defrag_running{job='redis-exporter'} == 1
         for: 10m
         labels:
@@ -91,7 +91,7 @@ groups:
           description: "Redis đang chạy chống phân mảnh bộ nhớ liên tục hơn 10 phút."
 
       # 5. Fragmentation bộ nhớ cao
-      - alert: RedisMemoryFragmentationHigh
+      - alert: (Redis)-MemoryFragmentationHigh
         expr: redis_mem_fragmentation_ratio{job='redis-exporter'} > 1.5
         for: 5m
         labels:
@@ -101,7 +101,7 @@ groups:
           description: "Tỷ lệ fragmentation > 1.5, bộ nhớ sử dụng không hiệu quả."
 
       # 6. Redis gần đầy bộ nhớ
-      - alert: RedisMemoryUsageNearLimit
+      - alert: (Redis)-MemoryUsageNearLimit
         expr: redis_memory_used_bytes{job='redis-exporter'} / redis_memory_max_bytes{job='redis-exporter'} > 0.9
         for: 2m
         labels:
@@ -111,7 +111,7 @@ groups:
           description: "Bộ nhớ Redis đã dùng hơn 90% giới hạn `maxmemory`. Cần mở rộng hoặc dọn bộ nhớ."
 
       # 7. Fork chậm
-      - alert: RedisForkTooSlow
+      - alert: (Redis)-ForkTooSlow
         expr: redis_latest_fork_seconds{job='redis-exporter'} > 2
         for: 1m
         labels:
@@ -121,7 +121,7 @@ groups:
           description: "Fork Redis mất hơn 2 giây. Có thể ảnh hưởng đến hiệu năng khi lưu RDB hoặc AOF."
 
       # 8. Đang loading RDB dump (khởi động lâu)
-      - alert: RedisLoadingDumpFile
+      - alert: (Redis)-LoadingDumpFile
         expr: redis_loading_dump_file{job='redis-exporter'} == 1
         for: 2m
         labels:
@@ -131,7 +131,7 @@ groups:
           description: "Redis đang trong quá trình khởi động và load file dump.rdb."
 
       # 9. Lazyfree backlog cao
-      - alert: RedisLazyFreeBacklogHigh
+      - alert: (Redis)-LazyFreeBacklogHigh
         expr: redis_lazyfree_pending_objects{job='redis-exporter'} > 1000
         for: 2m
         labels:
@@ -141,7 +141,7 @@ groups:
           description: "Hệ thống có hơn 1000 đối tượng đang chờ giải phóng (lazyfree)."
 
       # 10. Replica lag (nếu dùng replication)
-      - alert: RedisReplicaLag
+      - alert: (Redis)-ReplicaLag
         expr: redis_master_repl_offset{job='redis-exporter'} < 1000
         for: 2m
         labels:
@@ -151,7 +151,7 @@ groups:
           description: "Replication offset thấp, có thể replica không theo kịp master."
 
       # 11. RSS memory tăng bất thường
-      - alert: RedisRSSMemoryTooHigh
+      - alert: (Redis)-RSSMemoryTooHigh
         expr: redis_memory_used_rss_bytes{job='redis-exporter'} > redis_memory_used_bytes{job='redis-exporter'} * 1.5
         for: 3m
         labels:
@@ -161,7 +161,7 @@ groups:
           description: "Có thể do phân mảnh hoặc leak bộ nhớ nội bộ Redis."
 
       # 12. Scripts dùng quá nhiều RAM
-      - alert: RedisScriptMemoryHigh
+      - alert: (Redis)-ScriptMemoryHigh
         expr: redis_memory_used_scripts_bytes{job='redis-exporter'} > 50 * 1024 * 1024
         for: 2m
         labels:

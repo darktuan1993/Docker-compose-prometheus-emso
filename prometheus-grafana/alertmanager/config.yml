@@ -43,7 +43,14 @@ route:
       repeat_interval: 1h
 
     - match_re:
-        job: "yugabytedb|node_prefix|redis-exporter"
+        job: "yugabytedb|node_prefix"
+      receiver: database-telegram
+      # group_wait: 30s
+      # group_interval: 5m
+      # repeat_interval: 1h
+
+    - match_re:
+        job: "redis-exporter|app|env"
       receiver: database-telegram
       # group_wait: 30s
       # group_interval: 5m
