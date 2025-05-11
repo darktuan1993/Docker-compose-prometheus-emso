@@ -1,7 +1,7 @@
 groups:
 - name: server-yugabyte
   rules:
-  - alert: Yugabyte Master Down
+  - alert: (Yugabyte)-Master Down
     expr: up{node_prefix="cluster-1", instance=~".*:7000", job="yugabytedb"} == 0
     for: 2m
     labels:
@@ -10,7 +10,7 @@ groups:
       summary: "Máy chủ {{ $labels.instance }} không phản hồi"
       description: "Máy chủ Yugabyte Master tại {{ $labels.instance }} đã không phản hồi trong 2 phút. Kiểm tra kết nối hoặc trạng thái dịch vụ."
 
-  - alert: (Yugabyte) Master Down
+  - alert: (Yugabyte)-Master Down
     expr: up{node_prefix="cluster-1", instance=~".*:9000"} == 0
     for: 2m
     labels:
@@ -19,7 +19,7 @@ groups:
       summary: "Máy chủ {{ $labels.instance }} không phản hồi"
       description: "Máy chủ Yugabyte Master tại {{ $labels.instance }} đã không phản hồi trong 2 phút. Kiểm tra kết nối hoặc trạng thái dịch vụ."
 
-  - alert: YugabyteLechThoiGianMasterVaMayChu
+  - alert: (Yugabyte)-YugabyteLechThoiGianMasterVaMayChu
     expr: hybrid_clock_error{export_type="master_export",job="yugabytedb"} > 500000  # 500ms
     for: 2m
     labels:
@@ -30,7 +30,7 @@ groups:
         Node Master {{ $labels.instance }} có sai số thời gian (clock error) lớn hơn 500ms trong hơn 2 phút. Điều này có thể ảnh hưởng tới đồng bộ dữ liệu, tính nhất quán hoặc gây lỗi giao dịch phân tán.
         ▸ Giá trị hiện tại: {{ $value }} microseconds
 
-  - alert: YugabyteLechThoiGianTserverVaMayChu
+  - alert: (Yugabyte)-YugabyteLechThoiGianTserverVaMayChu
     expr: hybrid_clock_error{export_type="tserver_export", job='yugabytedb'} > 500000 # 500ms
     for: 2m
     labels:
@@ -42,7 +42,7 @@ groups:
         ▸ Giá trị hiện tại: {{ $value }} microseconds
 
 
-  - alert: LechGioHeThongMASTER
+  - alert: (Yugabyte)-LechGioHeThongMASTER
     expr: hybrid_clock_skew{export_type="master_export"} > 0  # 50ms
     for: 2m
     labels:
@@ -54,7 +54,7 @@ groups:
         ▸ Giá trị hiện tại: {{ $value }} microseconds
 
 
-  - alert: LechGioHeThongTSERVER
+  - alert: (Yugabyte)-LechGioHeThongTSERVER
     expr: hybrid_clock_skew{export_type="tserver_export", job='yugabytedb'} > 0  # 50ms
     for: 2m
     labels:
@@ -65,7 +65,7 @@ groups:
         Node TServer {{ $labels.instance }} có sai lệch thời gian (clock skew) lớn hơn 50ms trong hơn 2 phút. Điều này có thể ảnh hưởng tới tính đồng bộ dữ liệu và độ nhất quán trong giao dịch phân tán.
         ▸ Giá trị hiện tại: {{ $value }} microseconds
 
-  - alert: YugabyteYSQLKetNoiMoiTangDotBien
+  - alert: (Yugabyte)-YSQLKetNoiMoiTangDotBien
     expr: rate(yb_ysqlserver_new_connection_total{export_type="ysql_export"}[5m]) > 50
     for: 2m
     labels:
@@ -76,7 +76,7 @@ groups:
         Node {{ $labels.instance }} đang tạo hơn 50 kết nối mới mỗi giây tới YSQL trong 5 phút qua. Điều này có thể do ứng dụng không sử dụng connection pool hoặc bị truy cập bất thường.
         ▸ Tốc độ kết nối hiện tại: {{ $value }} kết nối/giây
 
-  - alert: YugabyteYSQLKetNoiHienTaiCao
+  - alert: (Yugabyte)-YSQLKetNoiHienTaiCao
     expr: yb_ysqlserver_connection_total{export_type="ysql_export"} > 800
     for: 2m
     labels:
@@ -87,7 +87,7 @@ groups:
         Node {{ $labels.instance }} đang duy trì hơn 800 kết nối tới YSQL trong hơn 2 phút. Có thể do ứng dụng giữ kết nối quá lâu hoặc không dùng pool.
         ▸ Số kết nối hiện tại: {{ $value }}
 
-  - alert: YugabyteYSQLBiTuChoiKetNoi
+  - alert: (Yugabyte)-YSQLBiTuChoiKetNoi
     expr: rate(yb_ysqlserver_connection_over_limit_total{export_type="ysql_export"}[5m]) > 0
     for: 1m
     labels:
@@ -97,3 +97,72 @@ groups:
       description: >
         Node {{ $labels.instance }} đang từ chối các kết nối YSQL vì đã vượt quá giới hạn max_connections trong 5 phút gần đây.
         ▸ Số lần từ chối mỗi giây: {{ $value }}
+      # Theo dõi schema - bảng
+  - alert: (Yugabyte)TangDotBienSoLuongBangTrongSchema
+    expr: increase(ycql_queries_system_schema_tables_count{export_type="ysql_export"}[5m]) > 5
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Tăng đột biến số lượng bảng"
+      description: "Số lượng bảng trong schema tăng hơn 5 bảng trong 5 phút."
+
+      # Theo dõi schema - view
+  - alert: (Yugabyte)TangDotBienSoLuongViewTrongSchema
+    expr: increase(ycql_queries_system_schema_views_count{export_type="ysql_export"}[5m]) > 3
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Tăng đột biến số lượng view"
+      description: "Có nhiều view mới được tạo trong 5 phút."
+
+      # Theo dõi schema - triggers
+  - alert: (Yugabyte)TangDotBienTriggersTrongSchema
+    expr: increase(ycql_queries_system_schema_triggers_count{export_type="ysql_export"}[5m]) > 3
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Tăng đột biến số lượng triggers"
+      description: "Có nhiều triggers mới được tạo. Cần kiểm tra schema."
+
+      # Theo dõi schema - types
+  - alert: (Yugabyte)TangDotBienTypesTrongSchema
+    expr: increase(ycql_queries_system_schema_types_count{export_type="ysql_export"}[5m]) > 2
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Tăng đột biến số lượng types"
+      description: "Schema types tăng bất thường trong 5 phút."
+
+      # Theo dõi kích thước ước tính tăng đột biến
+  - alert: (Yugabyte)TangDotBienUocLuongKichThuoc
+    expr: increase(ycql_queries_system_size_estimates_count{export_type="ysql_export"}[5m]) > 5
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Kích thước hệ thống tăng bất thường"
+      description: "Có thể do insert nhiều dữ liệu hoặc load test."
+
+      # Connection pool YSQL cao bất thường
+  - alert: (Yugabyte)SoLuongYSQLConnectionPoolQuaCao
+    expr: ysql_conn_mgr_num_pools{export_type="ysql_export"} > 100
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Số lượng connection pool cao"
+      description: "Có thể do leak hoặc không đóng kết nối đúng cách."
+
+      # Connection pool không cập nhật
+  # - alert: (Yugabyte)YSQLConnectionManagerKhongCapNhat
+  #   expr: time() - ysql_conn_mgr_last_updated_timestamp{export_type="ysql_export"} > 300
+  #   for: 2m
+  #   labels:
+  #     severity: critical
+  #   annotations:
+  #     summary: "Connection Manager không cập nhật"
+  #     description: "Không thấy cập nhật trong 5 phút. Có thể treo kết nối."
