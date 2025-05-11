@@ -9,6 +9,7 @@ global:
 rule_files:
   - "./rules/node/node.yml"
   - "./rules/yugabyte/yugabyte.yml"
+  - "./rules/redis/redis-alerts.yml"
 
 # alert
 alerting:
