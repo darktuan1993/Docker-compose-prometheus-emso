@@ -2,7 +2,7 @@ groups:
   - name: postgres-alerts
     rules:
       # 1. Cảnh báo exporter bị lỗi scrape
-      - alert: PGExporterScrapeError
+      - alert: (Postgres)-PGExporterScrapeError
         expr: pg_exporter_last_scrape_error{app="postgres"} == 1
         for: 1m
         labels:
@@ -12,7 +12,7 @@ groups:
           description: "Exporter không thể scrape dữ liệu từ PostgreSQL."
 
       # 2. Cảnh báo thời gian scrape quá lâu
-      - alert: PGExporterScrapeTooLong
+      - alert: (Postgres)-PGExporterScrapeTooLong
         expr: pg_exporter_last_scrape_duration_seconds{app="postgres"}  > 5
         for: 1m
         labels:
@@ -22,7 +22,7 @@ groups:
           description: "Exporter mất hơn 5s để lấy dữ liệu, có thể do DB quá tải."
 
       # 3. Dung lượng database vượt ngưỡng
-      - alert: PGDatabaseSizeTooBig
+      - alert: (Postgres)-PGDatabaseSizeTooBig
         expr: pg_database_size_bytes{app="postgres"}  > 20 * 1024 * 1024 * 1024  # 20GB
         for: 2m
         labels:
@@ -32,7 +32,7 @@ groups:
           description: "Một database có kích thước vượt quá 20GB. Cần xem xét vacuum hoặc phân mảnh."
 
       # 4. Quá gần vacuum wraparound
-      - alert: PGWraparoundImminent
+      - alert: (Postgres)-PGWraparoundImminent
         expr: pg_database_wraparound_age_datfrozenxid_seconds{app="postgres"}  < 604800  # < 7 ngày
         for: 1m
         labels:
@@ -42,7 +42,7 @@ groups:
           description: "PostgreSQL có thể bị dừng nếu không vacuum trước khi wraparound xảy ra."
 
       # 5. Độ trễ replication quá cao
-      - alert: PGReplicationLagHigh
+      - alert: (Postgres)-PGReplicationLagHigh
         expr: pg_replication_lag_seconds{app="postgres"}  > 10
         for: 1m
         labels:
@@ -52,7 +52,7 @@ groups:
           description: "Replica đang chậm hơn master hơn 10 giây."
 
       # 6. Cảnh báo có quá nhiều lock
-      - alert: PGTooManyLocks
+      - alert: (Postgres)-PGTooManyLocks
         expr: pg_locks_count{app="postgres"}  > 100
         for: 1m
         labels:
@@ -62,7 +62,7 @@ groups:
           description: "Số lượng lock trong PostgreSQL vượt 100. Có thể gây deadlock hoặc chậm."
 
       # 7. Cảnh báo hiệu suất cache thấp
-      - alert: PGResponseCacheLowHitRate
+      - alert: (Postgres)-PGResponseCacheLowHitRate
         expr: rate(pg_response_cache_hits{app="postgres"} [5m]) / (rate(pg_response_cache_hits{app="postgres"} [5m]) + rate(pg_response_cache_disable_calls{app="postgres"} [5m])) < 0.5
         for: 2m
         labels:
@@ -70,3 +70,332 @@ groups:
         annotations:
           summary: "Tỷ lệ cache hit thấp"
           description: "Tỷ lệ cache hit trong PostgreSQL response cache thấp hơn 50%."
+
+      # 1. Scrape PostgreSQL mất nhiều thời gian
+      - alert: (Postgres)-PGScrapeCollectorSlow
+        expr: pg_scrape_collector_duration_seconds > 5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Scrape PostgreSQL mất quá nhiều thời gian"
+          description: "Việc thu thập dữ liệu từ PostgreSQL exporter mất hơn 5 giây."
+
+      # 2. Scrape PostgreSQL thất bại
+      - alert: (Postgres)-PGScrapeCollectorFailed
+        expr: pg_scrape_collector_success == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Lỗi khi Prometheus scrape PostgreSQL"
+          description: "Exporter không phản hồi thành công khi Prometheus thực hiện scrape."
+
+      # 3. Cảnh báo nếu autovacuum bị tắt
+      - alert: (Postgres)-PGAutovacuumDisabled
+        expr: pg_settings_autovacuum == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Autovacuum đang bị tắt"
+          description: "Tính năng autovacuum bị vô hiệu hóa. PostgreSQL có thể bị lỗi wraparound nếu không xử lý sớm."
+
+      # 4. Autovacuum có ít worker quá
+      - alert: (Postgres)-PGAutovacuumTooFewWorkers
+        expr: pg_settings_autovacuum_max_workers < 2
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Số lượng worker của Autovacuum quá ít"
+          description: "autovacuum_max_workers được cấu hình quá thấp. Điều này có thể gây chậm vacuum."
+
+      # 5. Naptime của autovacuum quá dài
+      - alert: (Postgres)-PGAutovacuumNaptimeTooLong
+        expr: pg_settings_autovacuum_naptime_seconds > 600
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Thời gian nghỉ giữa các lần autovacuum quá dài"
+          description: "autovacuum_naptime_seconds > 600s. Có thể khiến vacuum không chạy đủ thường xuyên."
+
+      # 6. Cảnh báo cost delay autovacuum quá lớn (vacuum sẽ chậm)
+      - alert: (Postgres)-PGAutovacuumCostDelayTooHigh
+        expr: pg_settings_autovacuum_vacuum_cost_delay_seconds > 0.05
+        for: 1m
+        labels:
+          severity: info
+        annotations:
+          summary: "autovacuum cost delay cao"
+          description: "Vacuum bị delay do cấu hình autovacuum_vacuum_cost_delay quá cao (>50ms)."
+
+      # 7. Cảnh báo nếu role có limit connection thấp (nếu bạn có cấu hình)
+      - alert: (Postgres)-PGRolesConnectionLimitTooLow
+        expr: pg_roles_connection_limit < 10
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "Giới hạn kết nối thấp cho một role"
+          description: "Một role trong PostgreSQL được giới hạn kết nối < 10. Có thể gây từ chối kết nối nếu nhiều client."
+
+      # 1. Cảnh báo checkpoint quá xa nhau (timeout quá dài)
+      - alert: (Postgres)-PGCheckpointTimeoutTooHigh
+        expr: pg_settings_checkpoint_timeout_seconds > 900
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Checkpoint timeout dài bất thường"
+          description: "pg_settings_checkpoint_timeout_seconds > 900s. Có thể khiến dữ liệu chưa được ghi xuống ổ cứng kịp thời."
+
+      # 2. Cảnh báo checkpoint warning thấp (cảnh báo quá nhạy)
+      - alert: (Postgres)-PGCheckpointWarningTooLow
+        expr: pg_settings_checkpoint_warning_seconds < 30
+        for: 1m
+        labels:
+          severity: info
+        annotations:
+          summary: "Cảnh báo checkpoint quá nhạy"
+          description: "checkpoint_warning_seconds quá thấp. Có thể gây log nhiều cảnh báo không cần thiết."
+
+      # 3. Cảnh báo commit delay cấu hình sai
+      - alert: (Postgres)-PGCommitDelayTooHigh
+        expr: pg_settings_commit_delay > 5000
+        for: 1m
+        labels:
+          severity: info
+        annotations:
+          summary: "Commit delay quá cao"
+          description: "Cấu hình commit_delay cao >5ms. Có thể gây trễ phản hồi cho client."
+
+      # 4. Cảnh báo bgwriter delay quá lớn (ghi chậm dữ liệu xuống disk)
+      - alert: (Postgres)-PGBgwriterDelayTooHigh
+        expr: pg_settings_bgwriter_delay_seconds > 0.2
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Background writer delay quá dài"
+          description: "Cấu hình bgwriter_delay > 200ms. Có thể làm chậm việc flush buffer xuống disk."
+
+      # 5. Cảnh báo checkpoint_completion_target không đủ cao
+      - alert: (Postgres)-PGCheckpointCompletionTargetTooLow
+        expr: pg_settings_checkpoint_completion_target < 0.5
+        for: 1m
+        labels:
+          severity: info
+        annotations:
+          summary: "Checkpoint completion target quá thấp"
+          description: "Giá trị quá thấp (<0.5) có thể khiến checkpoint tập trung vào cuối chu kỳ và gây giật CPU/disk."
+
+      # 6. Cảnh báo block size bất thường (nếu hệ thống PostgreSQL sử dụng giá trị khác 8192 bytes)
+      - alert: (Postgres)-PGBlockSizeUnusual
+        expr: pg_settings_block_size != 8192
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Block size không chuẩn"
+          description: "Kích thước block không phải 8192 byte. Cần kiểm tra lại build config hoặc hiệu năng hệ thống."
+
+      # 1. Cảnh báo nếu CPU cost quá thấp
+      - alert: (Postgres)-PGCPUOperatorCostTooLow
+        expr: pg_settings_cpu_operator_cost < 0.001
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Chi phí CPU operator quá thấp"
+          description: "Giá trị thấp có thể khiến query planner đánh giá sai các plan phức tạp."
+
+      - alert: (Postgres)-PGCPUTupleCostTooLow
+        expr: pg_settings_cpu_tuple_cost < 0.01
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Chi phí CPU tuple quá thấp"
+          description: "Có thể dẫn tới chọn seq scan thay vì index scan không hợp lý."
+
+      # 2. Cảnh báo nếu statistics target quá thấp
+      - alert: (Postgres)-PGDefaultStatisticsTargetTooLow
+        expr: pg_settings_default_statistics_target < 50
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "Mức thống kê mặc định quá thấp"
+          description: "Kế hoạch query có thể không chính xác do thiếu thông tin thống kê."
+
+      # 3. Cảnh báo nếu deadlock timeout quá cao
+      - alert: (Postgres)-PGDeadlockTimeoutTooHigh
+        expr: pg_settings_deadlock_timeout_seconds > 5
+        for: 1m
+        labels:
+          severity: info
+        annotations:
+          summary: "Thời gian phát hiện deadlock quá trễ"
+          description: "Có thể dẫn tới phản hồi chậm khi xảy ra deadlock."
+
+      # 4. Cảnh báo nếu data_checksums bị tắt
+      - alert: (Postgres)-PGDataChecksumsDisabled
+        expr: pg_settings_data_checksums == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Data checksum bị vô hiệu"
+          description: "Không bật kiểm tra checksum có thể khiến bạn không phát hiện lỗi file hỏng."
+
+      # 5. Transaction mặc định bị readonly (có thể là lỗi nếu không mong muốn)
+      - alert: (Postgres)-PGTransactionDefaultReadOnly
+        expr: pg_settings_default_transaction_read_only == 1
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "Transaction mặc định đang là readonly"
+          description: "Tất cả transaction mặc định đang ở chế độ chỉ đọc. Cần kiểm tra nếu ứng dụng bị lỗi ghi."
+
+      # 1. effective_cache_size quá thấp
+      - alert: (Postgres)-PGEffectiveCacheSizeTooLow
+        expr: pg_settings_effective_cache_size_bytes < 2 * 1024 * 1024 * 1024  # < 2GB
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Giá trị effective_cache_size quá thấp"
+          description: "PostgreSQL đang ước lượng RAM có thể dùng cache dưới 2GB. Planner có thể đánh giá sai plan."
+
+      # 2. I/O concurrency quá thấp cho hệ thống nhiều disk
+      - alert: (Postgres)-PGIOConcurrencyTooLow
+        expr: pg_settings_effective_io_concurrency < 2
+        for: 1m
+        labels:
+          severity: info
+        annotations:
+          summary: "I/O concurrency thấp"
+          description: "Trên hệ thống nhiều disk, nên đặt effective_io_concurrency > 2 để tối ưu hóa bitmap scan."
+
+      # 3. Bitmap scan bị tắt
+      - alert: (Postgres)-PGBitmapScanDisabled
+        expr: pg_settings_enable_bitmapscan == 0
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "Bitmap scan bị vô hiệu hóa"
+          description: "Cấu hình hiện tại đang tắt bitmap scan. Điều này có thể khiến query performance kém."
+
+      # 4. Debug query planner đang bật (có thể rò rỉ log)
+      - alert: (Postgres)-PGDebugPrintEnabled
+        expr: pg_settings_debug_print_plan == 1 or pg_settings_debug_print_parse == 1 or pg_settings_debug_print_rewritten == 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Tùy chọn debug query planner đang bật"
+          description: "Các tùy chọn debug như print_plan, print_parse đang được bật. Có thể gây log dư thừa và lộ query nội bộ."
+
+      # 5. Cảnh báo nếu default_statistics_target quá thấp
+      - alert: (Postgres)-PGStatisticsTargetTooLow
+        expr: pg_settings_default_statistics_target < 50
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Thông tin thống kê mặc định quá thấp"
+          description: "Kế hoạch query có thể không chính xác nếu thiếu thông tin thống kê đầy đủ."
+
+      # 6. Cảnh báo nếu mặc định transaction đang readonly
+      - alert: (Postgres)-PGTransactionDefaultReadonly
+        expr: pg_settings_default_transaction_read_only == 1
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "Mặc định transaction đang ở chế độ chỉ đọc"
+          description: "Có thể gây lỗi ghi nếu ứng dụng không override chế độ này."
+
+      # 7. Cảnh báo nếu OID đang được dùng mặc định
+      - alert: (Postgres)-PGUsingOIDByDefault
+        expr: pg_settings_default_with_oids == 1
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "OID đang được thêm mặc định cho bảng"
+          description: "Việc sử dụng OID cho bảng mới là không còn được khuyến nghị."
+
+      # 1. fsync bị tắt → cực kỳ nguy hiểm
+      - alert: (Postgres)-PGFsyncDisabled
+        expr: pg_settings_fsync == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Fsync đang bị tắt"
+          description: "PostgreSQL không đồng bộ dữ liệu xuống đĩa. Dữ liệu có thể bị mất khi mất điện."
+
+      # 2. full_page_writes bị tắt → dễ hỏng dữ liệu
+      - alert: (Postgres)-PGFullPageWritesDisabled
+        expr: pg_settings_full_page_writes == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "full_page_writes đang bị tắt"
+          description: "Nếu PostgreSQL crash giữa chừng, dữ liệu có thể không khôi phục được."
+
+      # 3. TID scan bị tắt (trong một số hệ thống dùng TID scan đặc biệt)
+      - alert: (Postgres)-PGTidScanDisabled
+        expr: pg_settings_enable_tidscan == 0
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "TID scan đang bị tắt"
+          description: "PostgreSQL không cho phép TID scan. Nên kiểm tra nếu hệ thống dùng tính năng này."
+
+      # 4. GEQO bị tắt
+      - alert: (Postgres)-PGGEQODisabled
+        expr: pg_settings_geqo == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "GEQO (Genetic Query Optimizer) đang bị tắt"
+          description: "GEQO giúp tối ưu query nhiều join. Tắt nó có thể làm planner chậm với query phức tạp."
+
+      # 5. GEQO threshold quá thấp
+      - alert: (Postgres)-PGGEQOThresholdTooLow
+        expr: pg_settings_geqo_threshold < 8
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "GEQO threshold quá thấp"
+          description: "GEQO sẽ kick in sớm hơn cần thiết, có thể làm giảm hiệu quả planner."
+
+      # 6. GIN pending list limit quá thấp
+      - alert: (Postgres)-PGGinPendingListTooSmall
+        expr: pg_settings_gin_pending_list_limit_bytes < 4096
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "Giới hạn pending list GIN quá nhỏ"
+          description: "Có thể gây nhiều lần flush trong GIN index → hiệu suất thấp hơn."
+
+      # 7. exit_on_error bật (nếu dùng trong hệ thống nhiều script, có thể gây thoát toàn bộ batch)
+      - alert: (Postgres)-PGExitOnErrorEnabled
+        expr: pg_settings_exit_on_error == 1
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "Cấu hình exit_on_error đang bật"
+          description: "Có thể gây fail cả script nếu gặp 1 lỗi nhỏ. Xem lại với các job batch dài."
