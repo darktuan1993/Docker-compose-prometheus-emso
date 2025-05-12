@@ -1,0 +1,72 @@
+groups:
+  - name: postgres-alerts
+    rules:
+      # 1. Cảnh báo exporter bị lỗi scrape
+      - alert: PGExporterScrapeError
+        expr: pg_exporter_last_scrape_error{app="postgres"} == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Lỗi khi exporter scrape PostgreSQL"
+          description: "Exporter không thể scrape dữ liệu từ PostgreSQL."
+
+      # 2. Cảnh báo thời gian scrape quá lâu
+      - alert: PGExporterScrapeTooLong
+        expr: pg_exporter_last_scrape_duration_seconds{app="postgres"}  > 5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Scrape PostgreSQL mất quá nhiều thời gian"
+          description: "Exporter mất hơn 5s để lấy dữ liệu, có thể do DB quá tải."
+
+      # 3. Dung lượng database vượt ngưỡng
+      - alert: PGDatabaseSizeTooBig
+        expr: pg_database_size_bytes{app="postgres"}  > 20 * 1024 * 1024 * 1024  # 20GB
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Dung lượng cơ sở dữ liệu vượt ngưỡng"
+          description: "Một database có kích thước vượt quá 20GB. Cần xem xét vacuum hoặc phân mảnh."
+
+      # 4. Quá gần vacuum wraparound
+      - alert: PGWraparoundImminent
+        expr: pg_database_wraparound_age_datfrozenxid_seconds{app="postgres"}  < 604800  # < 7 ngày
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Gần tới wraparound vacuum bắt buộc"
+          description: "PostgreSQL có thể bị dừng nếu không vacuum trước khi wraparound xảy ra."
+
+      # 5. Độ trễ replication quá cao
+      - alert: PGReplicationLagHigh
+        expr: pg_replication_lag_seconds{app="postgres"}  > 10
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Độ trễ replication cao"
+          description: "Replica đang chậm hơn master hơn 10 giây."
+
+      # 6. Cảnh báo có quá nhiều lock
+      - alert: PGTooManyLocks
+        expr: pg_locks_count{app="postgres"}  > 100
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Quá nhiều lock đang giữ"
+          description: "Số lượng lock trong PostgreSQL vượt 100. Có thể gây deadlock hoặc chậm."
+
+      # 7. Cảnh báo hiệu suất cache thấp
+      - alert: PGResponseCacheLowHitRate
+        expr: rate(pg_response_cache_hits{app="postgres"} [5m]) / (rate(pg_response_cache_hits{app="postgres"} [5m]) + rate(pg_response_cache_disable_calls{app="postgres"} [5m])) < 0.5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Tỷ lệ cache hit thấp"
+          description: "Tỷ lệ cache hit trong PostgreSQL response cache thấp hơn 50%."
