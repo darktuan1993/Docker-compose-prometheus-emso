@@ -8,9 +8,9 @@ global:
 
 rule_files:
   - "./rules/node/node.yml"
-  - "./rules/yugabyte/yugabyte.yml"
-  - "./rules/redis/redis-alerts.yml"
-  - "./rules/postgres/pg_alerts.yml"
+  # - "./rules/yugabyte/yugabyte.yml"
+  # - "./rules/redis/redis-alerts.yml"
+  # - "./rules/postgres/pg_alerts.yml"
 
 # ALERTING 
 
