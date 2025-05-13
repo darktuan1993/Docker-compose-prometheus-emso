@@ -30,77 +30,60 @@ scrape_configs:
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
-      - targets: 
-        [
-          "172.16.0.83:9100",
-          "172.16.0.89:9100",  
-        ]
+      - targets:
+          - "172.16.0.83:9100"
+          - "172.16.0.89:9100"
         labels:
           export_type: "redis_node_export"
 
-      - targets: 
-        [
-        # redis-prod-primary
-          "172.16.0.83:9121",
-          "172.16.0.89:9121",   
-        ]
+      - targets:
+          - "172.16.0.83:9121"
+          - "172.16.0.89:9121"
         labels:
           export_type: "redis_service_export"
 
-
-
-###  REDIS
+### REDIS
   - job_name: "prod-redis-service"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
-      - targets: 
-        [
-        # redis-prod-primary
-          "172.16.0.72:9121",
-          "172.16.0.123:9121",
-          "172.16.0.86:9121",  
-        # redis-prod-replica
-          "172.16.0.189:9121",
-          "172.16.0.221:9121",
-          "172.16.0.208:9121",    
-        ]
+      - targets:
+          # redis-prod-primary
+          - "172.16.0.72:9121"
+          - "172.16.0.123:9121"
+          - "172.16.0.86:9121"
+          # redis-prod-replica
+          - "172.16.0.189:9121"
+          - "172.16.0.221:9121"
+          - "172.16.0.208:9121"
         labels:
-          export_type: "redis_node_export"    
+          export_type: "redis_node_export"
 
-      - targets: 
-        [
-        # redis-prod-primary
-          "172.16.0.72:9121",
-          "172.16.0.123:9121",
-          "172.16.0.86:9121",  
-        # redis-prod-replica
-          "172.16.0.189:9121",
-          "172.16.0.221:9121",
-          "172.16.0.208:9121",    
-        ]
+      - targets:
+          # redis-prod-primary
+          - "172.16.0.72:9121"
+          - "172.16.0.123:9121"
+          - "172.16.0.86:9121"
+          # redis-prod-replica
+          - "172.16.0.189:9121"
+          - "172.16.0.221:9121"
+          - "172.16.0.208:9121"
         labels:
           export_type: "redis_service_export"
-
 
 ###  KAFKA
   - job_name: "prod-kafka-broker"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
-      - targets: 
-        [
-          "172.16.0.199:9100",
-          "172.16.0.104:9100",
-          "172.16.0.226:9100",    
-          "172.16.0.106:9100",
-          "172.16.0.146:9100",
-        ]
+      - targets:
+          - "172.16.0.199:9100"
+          - "172.16.0.104:9100"
+          - "172.16.0.226:9100"
+          - "172.16.0.106:9100"
+          - "172.16.0.146:9100"
         labels:
           export_type: "kafka_node_export"
-
-
-
 
 
 ### YUGABYTEDB
