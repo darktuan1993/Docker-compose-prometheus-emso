@@ -12,99 +12,36 @@ rule_files:
   - "./rules/redis/redis-alerts.yml"
   - "./rules/postgres/pg_alerts.yml"
 
-# ALERTING 
-
-# alerting:
-#   alertmanagers:
-#     - scheme: http
-#       static_configs:
-#         - targets: ["172.16.0.225:32801"]
-#       basic_auth:
-#         username: admin
-#         password: Emso@Uddnfk2334
+# alert
+alerting:
+  alertmanagers:
+    - scheme: http
+      static_configs:
+        - targets: ["172.16.0.225:32801"]
+      basic_auth:
+        username: admin
+        password: Emso@Uddnfk2334
 
 scrape_configs:
-
-### ECS-REDIS-SEARCH
-  - job_name: "ecs-redis-search"
-    scrape_interval: 5s
-    metrics_path: /metrics
+  - job_name: 'prometheus'
     static_configs:
-      - targets: 
-        [
-          "172.16.0.83:9100",
-          "172.16.0.89:9100",  
-        ]
-        labels:
-          export_type: "redis_node_export"
+      - targets: ['172.16.0.225:32800']
+    basic_auth:
+      username: "admin"
+      password: "Emso@Uddnfk2334"
+        
+  - job_name: "http_sd_config"
+    metric_relabel_configs:
+      - source_labels: ["__name__"]
+        regex: "go_.*|process_.*|grpc_.*|http_.*|.*_bucket|.*_quantile"
+        action: drop
+    http_sd_configs:
+      - url: http://172.16.0.225:5000/api/v1/targets/prom-get
+        authorization:
+          type: Bearer
+          credentials: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOiIyMzIzMzQzNzE0In0.wIHdAwvsPeIF0y-yc6KvvOumTPowzM5b0KkAppjjQ4w"
 
-      - targets: 
-        [
-        # redis-prod-primary
-          "172.16.0.83:9121",
-          "172.16.0.89:9121",   
-        ]
-        labels:
-          export_type: "redis_service_export"
-
-
-
-###  REDIS
-  - job_name: "prod-redis-service"
-    scrape_interval: 5s
-    metrics_path: /metrics
-    static_configs:
-      - targets: 
-        [
-        # redis-prod-primary
-          "172.16.0.72:9121",
-          "172.16.0.123:9121",
-          "172.16.0.86:9121",  
-        # redis-prod-replica
-          "172.16.0.189:9121",
-          "172.16.0.221:9121",
-          "172.16.0.208:9121",    
-        ]
-        labels:
-          export_type: "redis_node_export"    
-
-      - targets: 
-        [
-        # redis-prod-primary
-          "172.16.0.72:9121",
-          "172.16.0.123:9121",
-          "172.16.0.86:9121",  
-        # redis-prod-replica
-          "172.16.0.189:9121",
-          "172.16.0.221:9121",
-          "172.16.0.208:9121",    
-        ]
-        labels:
-          export_type: "redis_service_export"
-
-
-###  KAFKA
-  - job_name: "prod-kafka-broker"
-    scrape_interval: 5s
-    metrics_path: /metrics
-    static_configs:
-      - targets: 
-        [
-          "172.16.0.199:9100",
-          "172.16.0.104:9100",
-          "172.16.0.226:9100",    
-          "172.16.0.106:9100",
-          "172.16.0.146:9100",
-        ]
-        labels:
-          export_type: "kafka_node_export"
-
-
-
-
-
-### YUGABYTEDB
-  - job_name: "prod-yugabytedb"
+  - job_name: "yugabytedb"
     metrics_path: /prometheus-metrics
     relabel_configs:
       - target_label: "node_prefix"
@@ -135,78 +72,87 @@ scrape_configs:
     static_configs:
       - targets:
           [
-            # prod-yb-market
+            "172.16.0.98:7000",
+            "172.16.0.46:7000",
+            "172.16.0.235:7000",
+            "172.16.0.232:7000",
+            "172.16.0.135:7000",
+            "172.16.0.47:7000",
             "172.16.0.173:7000",
             "172.16.0.245:7000",
             "172.16.0.227:7000",
-            # prod-yb-sn
             "172.16.0.156:7000",
             "172.16.0.207:7000",
             "172.16.0.163:7000",
-            "172.16.0.70:7000",
-            "172.16.0.18:7000",
           ]
         labels:
           export_type: "master_export"
       - targets:
           [
-             # prod-yb-market
+            "172.16.0.98:9000",
+            "172.16.0.46:9000",
+            "172.16.0.235:9000",
+            "172.16.0.232:9000",
+            "172.16.0.135:9000",
+            "172.16.0.47:9000",
             "172.16.0.173:9000",
             "172.16.0.245:9000",
             "172.16.0.227:9000",
-             # prod-yb-sn
             "172.16.0.156:9000",
             "172.16.0.207:9000",
             "172.16.0.163:9000",
-            "172.16.0.70:9000",
-            "172.16.0.18:9000",
-            
           ]
         labels:
           export_type: "tserver_export"
       - targets:
           [
-             # prod-yb-market
+            "172.16.0.98:12000",
+            "172.16.0.46:12000",
+            "172.16.0.235:12000",
+            "172.16.0.232:12000",
+            "172.16.0.135:12000",
+            "172.16.0.47:12000",
             "172.16.0.173:12000",
             "172.16.0.245:12000",
             "172.16.0.227:12000",
-             # prod-yb-sn
             "172.16.0.156:12000",
             "172.16.0.207:12000",
             "172.16.0.163:12000",
-            "172.16.0.70:12000",
-            "172.16.0.18:12000",
           ]
         labels:
           export_type: "cql_export"
       - targets:
           [
-             # prod-yb-market
+            "172.16.0.98:13000",
+            "172.16.0.46:13000",
+            "172.16.0.235:13000",
+            "172.16.0.232:13000",
+            "172.16.0.135:13000",
+            "172.16.0.47:13000",
             "172.16.0.173:13000",
             "172.16.0.245:13000",
             "172.16.0.227:13000",
-             # prod-yb-sn
             "172.16.0.156:13000",
             "172.16.0.207:13000",
             "172.16.0.163:13000",
-            "172.16.0.70:13000",
-            "172.16.0.18:13000",
           ]
         labels:
           export_type: "ysql_export"
       - targets:
           [
-             # prod-yb-market
+            "172.16.0.98:11000",
+            "172.16.0.46:11000",
+            "172.16.0.235:11000",
+            "172.16.0.232:11000",
+            "172.16.0.135:11000",
+            "172.16.0.47:11000",
             "172.16.0.173:11000",
             "172.16.0.245:11000",
             "172.16.0.227:11000",
-             # prod-yb-sn
             "172.16.0.156:11000",
             "172.16.0.207:11000",
             "172.16.0.163:11000",
-            "172.16.0.70:11000",
-            "172.16.0.18:11000",
           ]
         labels:
-          export_type: "yedis_export"
+          export_type: "redis_export"
 
