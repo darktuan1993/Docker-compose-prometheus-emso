@@ -25,6 +25,52 @@ rule_files:
 
 scrape_configs:
 
+### ELASTICSEARCH
+  - job_name: "prod-elasticsearch"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.43:9100"
+        labels:
+          export_type: "elastic_node_export"
+
+      # - targets:
+      #   labels:
+      #     export_type: "elastic_service_export"
+
+
+### GORSE
+  - job_name: "prod-gorse-db"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.43:9100"
+        labels:
+          export_type: "gorse_node_export"
+
+### PT DB
+  - job_name: "prod-pt-db"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.69:9100"
+        labels:
+          export_type: "pt_node_export"
+
+
+### prod-chat-db
+  - job_name: "prod-chat-db"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.254:9100"
+        labels:
+          export_type: "chat_node_export"
+
 ### ECS-REDIS-SEARCH
   - job_name: "ecs-redis-search"
     scrape_interval: 5s
@@ -49,13 +95,13 @@ scrape_configs:
     static_configs:
       - targets:
           # redis-prod-primary
-          - "172.16.0.72:9121"
-          - "172.16.0.123:9121"
-          - "172.16.0.86:9121"
+          - "172.16.0.72:9100"
+          - "172.16.0.123:9100"
+          - "172.16.0.86:9100"
           # redis-prod-replica
-          - "172.16.0.189:9121"
-          - "172.16.0.221:9121"
-          - "172.16.0.208:9121"
+          - "172.16.0.189:9100"
+          - "172.16.0.221:9100"
+          - "172.16.0.208:9100"
         labels:
           export_type: "redis_node_export"
 
@@ -84,7 +130,6 @@ scrape_configs:
           - "172.16.0.146:9100"
         labels:
           export_type: "kafka_node_export"
-
 
 ### YUGABYTEDB
   - job_name: "prod-yugabytedb"
@@ -116,6 +161,23 @@ scrape_configs:
         target_label: "__name__"
         replacement: "rpc_latency$4"
     static_configs:
+      - targets:
+          [
+             # prod-yb-market
+            "172.16.0.173:9101",
+            "172.16.0.245:9101",
+            "172.16.0.227:9101",
+             # prod-yb-sn
+            "172.16.0.156:9101",
+            "172.16.0.207:9101",
+            "172.16.0.163:9101",
+            "172.16.0.70:9101",
+            "172.16.0.18:9101",
+            
+          ]
+        labels:
+          export_type: "yugabyte_node_export"      
+
       - targets:
           [
             # prod-yb-market
