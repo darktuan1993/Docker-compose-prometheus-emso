@@ -26,7 +26,7 @@ rule_files:
 scrape_configs:
 
 ### ELASTICSEARCH
-  - job_name: "Metrics máy chủ cài đặt prod-elasticsearch"
+  - job_name: "[prod-elasticsearch-db]-Metrics máy chủ cài đặt prod-elasticsearch"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -41,7 +41,7 @@ scrape_configs:
 
 
 ### GORSE
-  - job_name: "Metrics máy chủ cài đặt prod-gorse-db"
+  - job_name: "[prod-gorse-db]-Metrics máy chủ cài đặt prod-gorse-db"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -51,7 +51,7 @@ scrape_configs:
           export_type: "gorse_node_export"
 
 ### PT DB
-  - job_name: "Metrics máy chủ cài đặt prod-pt-db"
+  - job_name: "[prod-pt-db]-Metrics máy chủ cài đặt prod-pt-db"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -61,7 +61,7 @@ scrape_configs:
           export_type: "pt_node_export"
 
 ### prod-notification
-  - job_name: "Metrics máy chủ cài đặt prod-chat-db"
+  - job_name: "[prod-chat-db-Server]-Metrics máy chủ cài đặt prod-chat-db"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -71,7 +71,7 @@ scrape_configs:
           export_type: "chat_node_export"
 
 ### prod-notification-db
-  - job_name: "Metrics máy chủ cài đặt prod-notification-db"
+  - job_name: "[prod-notification-db-Server]-Metrics máy chủ cài đặt "
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -81,7 +81,7 @@ scrape_configs:
           export_type: "notification_node_export"
 
 ### ECS-REDIS-SEARCH
-  - job_name: "Metrics máy chủ cài đặt ecs-redis-search"
+  - job_name: "[ecs-redis-search-Server]-Metrics máy chủ cài đặt"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -98,7 +98,7 @@ scrape_configs:
       #     export_type: "redis_service_export"
 
 ### REDIS
-  - job_name: "Metrics máy chủ cài đặt Redis-Prod"
+  - job_name: "[Redis-Server]-Metrics máy chủ cài đặt Redis-Prod"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -127,7 +127,7 @@ scrape_configs:
       #     export_type: "redis_service_export"
 
 ###  KAFKA
-  - job_name: "Metrics máy chủ cài đặt Kafka-Prod"
+  - job_name: "[Kafka-Server]-Metrics máy chủ cài đặt Kafka-Prod"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -141,7 +141,7 @@ scrape_configs:
           export_type: "kafka_node_export"
 
 ### YUGABYTEDB
-  - job_name: "Metrics máy chủ cài đặt YugabyteDB-Prod"
+  - job_name: "[YugabyteDB-Server]-Metrics máy chủ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -159,7 +159,7 @@ scrape_configs:
         labels:
           export_type: "yugabyte_node_export"
      
-  - job_name: "Metrics của dịch vụ YugabyteDB-Prod"
+  - job_name: "[YugabyteDB-Service]-Metrics dịch vụ"
     metrics_path: /prometheus-metrics
     relabel_configs:
     metric_relabel_configs:
