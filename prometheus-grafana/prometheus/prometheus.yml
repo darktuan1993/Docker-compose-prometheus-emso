@@ -26,7 +26,7 @@ rule_files:
 scrape_configs:
 
 ### ELASTICSEARCH
-  - job_name: "[prod-elasticsearch-db]-Metrics máy chủ"
+  - job_name: "[Elasticsearch-DB-Prod]-Metrics máy chủ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -41,7 +41,7 @@ scrape_configs:
 
 
 ### GORSE
-  - job_name: "[prod-gorse-db]-Metrics máy chủ"
+  - job_name: "[Gorse-DB-Prod]-Metrics máy chủ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -51,7 +51,7 @@ scrape_configs:
           export_type: "gorse_node_export"
 
 ### PT DB
-  - job_name: "[prod-pt-db]-Metrics máy chủ"
+  - job_name: "[Pt-DB-Prod]-Metrics máy chủ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -61,7 +61,7 @@ scrape_configs:
           export_type: "pt_node_export"
 
 ### prod-notification
-  - job_name: "[prod-chat-db-Server]-Metrics máy chủ"
+  - job_name: "[Chat-DB-Prod]-Metrics máy chủ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -70,8 +70,8 @@ scrape_configs:
         labels:
           export_type: "chat_node_export"
 
-### prod-notification-db
-  - job_name: "[prod-notification-db-Server]-Metrics máy chủ "
+### prod-notification-DB
+  - job_name: "[Notification-DB-Prod]-Metrics máy chủ "
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -81,7 +81,7 @@ scrape_configs:
           export_type: "notification_node_export"
 
 ### ECS-REDIS-SEARCH
-  - job_name: "[ecs-redis-search-Server]-Metrics máy chủ"
+  - job_name: "[Ecs-Redis-Search-Prod]-Metrics máy chủ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -98,7 +98,7 @@ scrape_configs:
       #     export_type: "redis_service_export"
 
 ### REDIS
-  - job_name: "[Redis-Server]-Metrics máy chủ"
+  - job_name: "[Redis-Prod]-Metrics máy chủ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
