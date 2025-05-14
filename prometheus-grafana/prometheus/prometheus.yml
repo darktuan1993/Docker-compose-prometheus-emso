@@ -35,7 +35,7 @@ scrape_configs:
         labels:
           export_type: "elastic_node_export"
 
-  - job_name: "[Elasticsearch-Service-DB-Prod]-Metrics service"
+  - job_name: "[Elasticsearch-Service-DB-Prod]-Metrics service -- dịch vụ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -59,7 +59,7 @@ scrape_configs:
         labels:
           export_type: "gorse_node_export"
 
-  - job_name: "[Gorse-Service-DB-Prod]-Metrics service"
+  - job_name: "[Gorse-Service-DB-Prod]-Metrics service -- dịch vụ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -78,7 +78,7 @@ scrape_configs:
         labels:
           export_type: "pt_node_export"
 
-  - job_name: "[Pt-Service-DB-Prod]-Metrics service"
+  - job_name: "[Pt-Service-DB-Prod]-Metrics service -- dịch vụ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -97,7 +97,7 @@ scrape_configs:
         labels:
           export_type: "chat_node_export"
 
-  - job_name: "[Chat-Service-DB-Prod]-Metrics service"
+  - job_name: "[Chat-Service-DB-Prod]-Metrics service -- dịch vụ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -116,7 +116,7 @@ scrape_configs:
         labels:
           export_type: "notification_node_export"
 
-  - job_name: "[Notification-Service-DB-Prod]-Metrics service "
+  - job_name: "[Notification-Service-DB-Prod]-Metrics service -- dịch vụ "
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -137,7 +137,7 @@ scrape_configs:
         labels:
           export_type: "redis_node_export"
 
-  - job_name: "[Ecs-RedisSearch-Service-Prod]-Metrics service"
+  - job_name: "[Ecs-RedisSearch-Service-Prod]-Metrics service -- dịch vụ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -166,7 +166,7 @@ scrape_configs:
         labels:
           export_type: "redis_service_export"
 
-  - job_name: "[Redis-Service-Prod]-Metrics service"
+  - job_name: "[Redis-Service-Prod]-Metrics service -- dịch vụ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -196,7 +196,7 @@ scrape_configs:
         labels:
           export_type: "kafka_node_export"
 
-  - job_name: "[Kafka-Service-Prod]-Metrics máy chủ"
+  - job_name: "[Kafka-Service-Prod]-Metrics service -- dịch vụ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -228,7 +228,7 @@ scrape_configs:
         labels:
           export_type: "yugabyte_node_export"
      
-  - job_name: "[YugabyteDB-Service-Prod]-Metrics service"
+  - job_name: "[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ"
     metrics_path: /prometheus-metrics
     relabel_configs:
     metric_relabel_configs:
