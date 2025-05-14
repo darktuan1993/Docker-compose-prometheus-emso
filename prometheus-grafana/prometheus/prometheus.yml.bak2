@@ -1,0 +1,270 @@
+# my global config
+global:
+  scrape_interval: 1m
+  scrape_timeout: 20s
+  evaluation_interval: 1m
+  external_labels:
+    monitor: "Emso-Container"
+
+rule_files:
+  - "./rules/node/node.yml"
+  # - "./rules/yugabyte/yugabyte.yml"
+  # - "./rules/redis/redis-alerts.yml"
+  # - "./rules/postgres/pg_alerts.yml"
+
+# ALERTING 
+
+# alerting:
+#   alertmanagers:
+#     - scheme: http
+#       static_configs:
+#         - targets: ["172.16.0.225:32801"]
+#       basic_auth:
+#         username: admin
+#         password: Emso@Uddnfk2334
+
+scrape_configs:
+
+### ELASTICSEARCH
+  - job_name: "[Elasticsearch-DB-Prod]-Metrics máy chủ"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.43:9100"
+        labels:
+          export_type: "elastic_node_export"
+
+      # - targets:
+      #   labels:
+      #     export_type: "elastic_service_export"
+
+
+### GORSE
+  - job_name: "[Gorse-DB-Prod]-Metrics máy chủ"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.43:9100"
+        labels:
+          export_type: "gorse_node_export"
+
+### PT DB
+  - job_name: "[Pt-DB-Prod]-Metrics máy chủ"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.69:9100"
+        labels:
+          export_type: "pt_node_export"
+
+### prod-notification
+  - job_name: "[Chat-DB-Prod]-Metrics máy chủ"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.254:9100"
+        labels:
+          export_type: "chat_node_export"
+
+### prod-notification-DB
+  - job_name: "[Notification-DB-Prod]-Metrics máy chủ "
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.88:9100"
+        labels:
+          export_type: "notification_node_export"
+
+### ECS-REDIS-SEARCH
+  - job_name: "[Ecs-Redis-Search-Prod]-Metrics máy chủ"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.83:9100"
+          - "172.16.0.89:9100"
+        labels:
+          export_type: "redis_node_export"
+
+      # - targets:
+      #     - "172.16.0.83:9121"
+      #     - "172.16.0.89:9121"
+      #   labels:
+      #     export_type: "redis_service_export"
+
+### REDIS
+  - job_name: "[Redis-Prod]-Metrics máy chủ"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          # redis-prod-primary
+          - "172.16.0.72:9100"
+          - "172.16.0.123:9100"
+          - "172.16.0.86:9100"
+          # redis-prod-replica
+          - "172.16.0.189:9100"
+          - "172.16.0.221:9100"
+          - "172.16.0.208:9100"
+        labels:
+          export_type: "redis_node_export"
+
+      # - targets:
+      #     # redis-prod-primary
+      #     - "172.16.0.72:9121"
+      #     - "172.16.0.123:9121"
+      #     - "172.16.0.86:9121"
+      #     # redis-prod-replica
+      #     - "172.16.0.189:9121"
+      #     - "172.16.0.221:9121"
+      #     - "172.16.0.208:9121"
+      #   labels:
+      #     export_type: "redis_service_export"
+
+###  KAFKA
+  - job_name: "[Kafka-Server]-Metrics máy chủ"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.199:9100"
+          - "172.16.0.104:9100"
+          - "172.16.0.226:9100"
+          - "172.16.0.106:9100"
+          - "172.16.0.146:9100"
+        labels:
+          export_type: "kafka_node_export"
+
+### YUGABYTEDB
+  - job_name: "[YugabyteDB-Server]-Metrics máy chủ"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          # prod-yb-market
+          - "172.16.0.173:9101"
+          - "172.16.0.245:9101"
+          - "172.16.0.227:9101"
+          # prod-yb-sn
+          - "172.16.0.156:9101"
+          - "172.16.0.207:9101"
+          - "172.16.0.163:9101"
+          - "172.16.0.70:9101"
+          - "172.16.0.18:9101"
+        labels:
+          export_type: "yugabyte_node_export"
+     
+  - job_name: "[YugabyteDB-Service]-Metrics dịch vụ"
+    metrics_path: /prometheus-metrics
+    relabel_configs:
+    metric_relabel_configs:
+      # Lưu tên metric gốc
+      - source_labels: ["__name__"]
+        target_label: "saved_name"
+        regex: ".*"
+        replacement: "$0"
+
+      # Tách các thành phần handler_latency_* ra thành label
+      - source_labels: ["__name__"]
+        regex: "^handler_latency_(yb_[^_]*)_([^_]*)_([^_]*?)(_sum|_count|_bucket)?$"
+        target_label: "server_type"
+        replacement: "$1"
+
+      - source_labels: ["__name__"]
+        regex: "^handler_latency_(yb_[^_]*)_([^_]*)_([^_]*?)(_sum|_count|_bucket)?$"
+        target_label: "service_type"
+        replacement: "$2"
+
+      - source_labels: ["__name__"]
+        regex: "^handler_latency_(yb_[^_]*)_([^_]*)_([^_]*?)(_sum|_count|_bucket)?$"
+        target_label: "service_method"
+        replacement: "$3"
+
+      # Đổi tên metric thành rpc_latency(_sum|_count)?
+      - source_labels: ["__name__"]
+        regex: "^handler_latency_(yb_[^_]*)_([^_]*)_([^_]*?)(_sum|_count|_bucket)?$"
+        target_label: "__name__"
+        replacement: "rpc_latency$4"
+
+    static_configs:
+      - targets:
+          [
+            # prod-yb-market
+            "172.16.0.173:7000",
+            "172.16.0.245:7000",
+            "172.16.0.227:7000",
+            # prod-yb-sn
+            "172.16.0.156:7000",
+            "172.16.0.207:7000",
+            "172.16.0.163:7000",
+            "172.16.0.70:7000",
+            "172.16.0.18:7000",
+          ]
+        labels:
+          export_type: "master_export"
+      - targets:
+          [
+             # prod-yb-market
+            "172.16.0.173:9000",
+            "172.16.0.245:9000",
+            "172.16.0.227:9000",
+             # prod-yb-sn
+            "172.16.0.156:9000",
+            "172.16.0.207:9000",
+            "172.16.0.163:9000",
+            "172.16.0.70:9000",
+            "172.16.0.18:9000",
+            
+          ]
+        labels:
+          export_type: "tserver_export"
+      - targets:
+          [
+             # prod-yb-market
+            "172.16.0.173:12000",
+            "172.16.0.245:12000",
+            "172.16.0.227:12000",
+             # prod-yb-sn
+            "172.16.0.156:12000",
+            "172.16.0.207:12000",
+            "172.16.0.163:12000",
+            "172.16.0.70:12000",
+            "172.16.0.18:12000",
+          ]
+        labels:
+          export_type: "cql_export"
+      - targets:
+          [
+             # prod-yb-market
+            "172.16.0.173:13000",
+            "172.16.0.245:13000",
+            "172.16.0.227:13000",
+             # prod-yb-sn
+            "172.16.0.156:13000",
+            "172.16.0.207:13000",
+            "172.16.0.163:13000",
+            "172.16.0.70:13000",
+            "172.16.0.18:13000",
+          ]
+        labels:
+          export_type: "ysql_export"
+      - targets:
+          [
+             # prod-yb-market
+            "172.16.0.173:11000",
+            "172.16.0.245:11000",
+            "172.16.0.227:11000",
+             # prod-yb-sn
+            "172.16.0.156:11000",
+            "172.16.0.207:11000",
+            "172.16.0.163:11000",
+            "172.16.0.70:11000",
+            "172.16.0.18:11000",
+          ]
+        labels:
+          export_type: "yedis_export"
