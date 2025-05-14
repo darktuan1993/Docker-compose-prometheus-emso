@@ -24,9 +24,9 @@ rule_files:
 #         password: Emso@Uddnfk2334
 
 scrape_configs:
-
-### ELASTICSEARCH
-  - job_name: "[Elasticsearch-DB-Prod]-Metrics máy chủ"
+ 
+###-------- ELASTICSEARCH -------- ###
+  - job_name: "[Elasticsearch-Server-DB-Prod]-Metrics máy chủ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -35,13 +35,22 @@ scrape_configs:
         labels:
           export_type: "elastic_node_export"
 
+  - job_name: "[Elasticsearch-Service-DB-Prod]-Metrics service"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.43:9114"
+        labels:
+          export_type: "elastic_service_export"
+
+
       # - targets:
       #   labels:
       #     export_type: "elastic_service_export"
 
-
-### GORSE
-  - job_name: "[Gorse-DB-Prod]-Metrics máy chủ"
+###-------- GORSE -------- ###
+  - job_name: "[Gorse-Server-DB-Prod]-Metrics máy chủ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -50,8 +59,17 @@ scrape_configs:
         labels:
           export_type: "gorse_node_export"
 
-### PT DB
-  - job_name: "[Pt-DB-Prod]-Metrics máy chủ"
+  - job_name: "[Gorse-Service-DB-Prod]-Metrics service"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.43:9000"
+        labels:
+          export_type: "gorse_service_export"
+
+###-------- PT DB -------- ###
+  - job_name: "[Pt-Server-DB-Prod]-Metrics máy chủ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -60,8 +78,17 @@ scrape_configs:
         labels:
           export_type: "pt_node_export"
 
-### prod-notification
-  - job_name: "[Chat-DB-Prod]-Metrics máy chủ"
+  - job_name: "[Pt-Service-DB-Prod]-Metrics service"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.69:50000"
+        labels:
+          export_type: "pt_service_export"
+
+###-------- prod-CHAT -------- ###
+  - job_name: "[Chat-Server-DB-Prod]-Metrics máy chủ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -70,8 +97,17 @@ scrape_configs:
         labels:
           export_type: "chat_node_export"
 
-### prod-notification-DB
-  - job_name: "[Notification-DB-Prod]-Metrics máy chủ "
+  - job_name: "[Chat-Service-DB-Prod]-Metrics service"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.254:50000"
+        labels:
+          export_type: "chat_service_export"
+
+###-------- prod-notification-DB -------- ###
+  - job_name: "[Notification-Server-DB-Prod]-Metrics máy chủ "
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -80,8 +116,18 @@ scrape_configs:
         labels:
           export_type: "notification_node_export"
 
-### ECS-REDIS-SEARCH
-  - job_name: "[Ecs-Redis-Search-Prod]-Metrics máy chủ"
+  - job_name: "[Notification-Service-DB-Prod]-Metrics service "
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.88:50000"
+        labels:
+          export_type: "notification_node_export"
+
+
+###-------- ECS-REDIS-SEARCH -------- ###
+  - job_name: "[Ecs-RedisSearch-Server-Prod]-Metrics máy chủ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -91,13 +137,18 @@ scrape_configs:
         labels:
           export_type: "redis_node_export"
 
-      # - targets:
-      #     - "172.16.0.83:9121"
-      #     - "172.16.0.89:9121"
-      #   labels:
-      #     export_type: "redis_service_export"
+  - job_name: "[Ecs-RedisSearch-Service-Prod]-Metrics service"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.83:9121"
+          - "172.16.0.89:9121"
+        labels:
+          export_type: "redis_service_export"
 
-### REDIS
+
+###-------- REDIS SERVER -------- ###
 
   - job_name: "[Redis-Server-Prod]-Metrics máy chủ"
     scrape_interval: 5s
@@ -115,8 +166,7 @@ scrape_configs:
         labels:
           export_type: "redis_service_export"
 
-
-  - job_name: "[Redis-Service-Prod]-Metrics máy chủ"
+  - job_name: "[Redis-Service-Prod]-Metrics service"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -132,8 +182,8 @@ scrape_configs:
         labels:
           export_type: "redis_node_export"
           
-###  KAFKA
-  - job_name: "[Kafka-Server]-Metrics máy chủ"
+###--------  KAFKA -------- ###
+  - job_name: "[Kafka-Server-Prod]-Metrics máy chủ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -146,8 +196,21 @@ scrape_configs:
         labels:
           export_type: "kafka_node_export"
 
-### YUGABYTEDB
-  - job_name: "[YugabyteDB-Server]-Metrics máy chủ"
+  - job_name: "[Kafka-Service-Prod]-Metrics máy chủ"
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "172.16.0.199:9308"
+          - "172.16.0.104:9308"
+          - "172.16.0.226:9308"
+          - "172.16.0.106:9308"
+          - "172.16.0.146:9308"
+        labels:
+          export_type: "kafka_service_export"
+
+###-------- YUGABYTEDB -------- ###
+  - job_name: "[YugabyteDB-Server-Prod]-Metrics máy chủ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -165,7 +228,7 @@ scrape_configs:
         labels:
           export_type: "yugabyte_node_export"
      
-  - job_name: "[YugabyteDB-Service]-Metrics dịch vụ"
+  - job_name: "[YugabyteDB-Service-Prod]-Metrics service"
     metrics_path: /prometheus-metrics
     relabel_configs:
     metric_relabel_configs:
