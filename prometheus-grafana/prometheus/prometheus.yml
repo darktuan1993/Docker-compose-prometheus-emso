@@ -142,7 +142,7 @@ scrape_configs:
 
 ### YUGABYTEDB
   - job_name: "prod-yugabytedb"
-    metrics_path: /prometheus-metrics
+    metrics_path: /metrics
     relabel_configs:
       - target_label: "node_prefix"
         replacement: "cluster-1"
