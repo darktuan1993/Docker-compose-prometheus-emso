@@ -138,14 +138,14 @@ scrape_configs:
   #         export_type: "redis_node_export"
 
   # - job_name: "[Ecs-RedisSearch-Service-Prod]-Metrics service -- dịch vụ"
-    scrape_interval: 5s
-    metrics_path: /metrics
-    static_configs:
-      - targets:
-          - "172.16.0.83:9121"
-          - "172.16.0.89:9121"
-        labels:
-          export_type: "redis_service_export"
+  #   scrape_interval: 5s
+  #   metrics_path: /metrics
+  #   static_configs:
+  #     - targets:
+  #         - "172.16.0.83:9121"
+  #         - "172.16.0.89:9121"
+  #       labels:
+  #         export_type: "redis_service_export"
 
 
 ###-------- REDIS SERVER -------- ###
