@@ -83,7 +83,7 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
       - targets:
-          - "172.16.0.69:50000"
+          - "172.16.0.69:9187"
         labels:
           export_type: "pt_service_export"
 
@@ -102,7 +102,7 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
       - targets:
-          - "172.16.0.254:50000"
+          - "172.16.0.254:9216"
         labels:
           export_type: "chat_service_export"
 
@@ -121,23 +121,23 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
       - targets:
-          - "172.16.0.88:50000"
+          - "172.16.0.88:9216"
         labels:
           export_type: "notification_node_export"
 
 
 ###-------- ECS-REDIS-SEARCH -------- ###
-  - job_name: "[Ecs-RedisSearch-Server-Prod]-Metrics máy chủ"
-    scrape_interval: 5s
-    metrics_path: /metrics
-    static_configs:
-      - targets:
-          - "172.16.0.83:9100"
-          - "172.16.0.89:9100"
-        labels:
-          export_type: "redis_node_export"
+  # - job_name: "[Ecs-RedisSearch-Server-Prod]-Metrics máy chủ"
+  #   scrape_interval: 5s
+  #   metrics_path: /metrics
+  #   static_configs:
+  #     - targets:
+  #         - "172.16.0.83:9100"
+  #         - "172.16.0.89:9100"
+  #       labels:
+  #         export_type: "redis_node_export"
 
-  - job_name: "[Ecs-RedisSearch-Service-Prod]-Metrics service -- dịch vụ"
+  # - job_name: "[Ecs-RedisSearch-Service-Prod]-Metrics service -- dịch vụ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
