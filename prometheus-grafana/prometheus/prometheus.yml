@@ -55,18 +55,18 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
       - targets:
-          - "172.16.0.43:9100"
+          - "172.16.0.61:9100"
         labels:
           export_type: "gorse_node_export"
 
-  - job_name: "[Gorse-Service-DB-Prod]-Metrics service -- dịch vụ"
-    scrape_interval: 5s
-    metrics_path: /metrics
-    static_configs:
-      - targets:
-          - "172.16.0.43:9000"
-        labels:
-          export_type: "gorse_service_export"
+  # - job_name: "[Gorse-Service-DB-Prod]-Metrics service -- dịch vụ"
+  #   scrape_interval: 5s
+  #   metrics_path: /metrics
+  #   static_configs:
+  #     - targets:
+  #         - "172.16.0.61:9000"
+  #       labels:
+  #         export_type: "gorse_service_export"
 
 ###-------- PT DB -------- ###
   - job_name: "[Pt-Server-DB-Prod]-Metrics máy chủ"
