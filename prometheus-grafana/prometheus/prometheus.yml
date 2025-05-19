@@ -150,7 +150,7 @@ scrape_configs:
 
 ###-------- REDIS SERVER -------- ###
 
-  - job_name: "[Redis-Server-Prod]-Metrics máy chủ"
+  - job_name: "[Redis-Server-Prod]-Metrics service -- dịch vụ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -166,7 +166,7 @@ scrape_configs:
         labels:
           export_type: "redis_service_export"
 
-  - job_name: "[Redis-Service-Prod]-Metrics service -- dịch vụ"
+  - job_name: "[Redis-Service-Prod]-Metrics máy chủ "
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
