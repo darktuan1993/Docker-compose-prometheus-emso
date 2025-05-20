@@ -1,72 +1,155 @@
 groups:
-  - name: redis-exporter-monitoring
+  - name: redis-alerts
     rules:
-      # 1. Exporter không hoạt động
-      - alert: (RedisExporter)-Down
-        expr: redis_up{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} == 0
+      - alert: (Redis)-BlockedClients
+        expr: redis_blocked_clients{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} > 0
         for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis đang có client bị block"
+          description: "Phát hiện ít nhất một client đang bị block. Cần kiểm tra pipeline hoặc slow command."
+
+      - alert: (Redis)-AOFRewriteTooLong
+        expr: redis_aof_last_rewrite_duration_sec{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} > 300
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis AOF rewrite mất quá nhiều thời gian"
+          description: "Quá trình AOF rewrite gần nhất mất hơn 5 phút. Có thể do file AOF quá lớn."
+
+      - alert: (Redis)-AOFWriteFailed
+        expr: redis_aof_last_write_status{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} == 0
+        for: 30s
         labels:
           severity: critical
         annotations:
-          summary: "Redis Exporter không phản hồi"
-          description: "Exporter không trả dữ liệu cho Prometheus. Kiểm tra container hoặc service exporter."
+          summary: "Redis ghi AOF thất bại"
+          description: "AOF không ghi thành công trong lần ghi gần nhất. Cần kiểm tra đĩa hoặc hệ thống."
 
-      # 2. Lỗi scrape gần nhất
-      - alert: (RedisExporter)-LastScrapeError
-        expr: redis_exporter_last_scrape_error{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} == 1
+      - alert: (Redis)-MemoryFragmentationHigh
+        expr: redis_allocator_frag_ratio{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} > 1.5
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis memory fragmentation cao"
+          description: "Tỷ lệ fragmentation của bộ nhớ Redis vượt 1.5. Cần xem xét cấu hình hoặc defrag."
+
+      - alert: (Redis)-DefragmentationRunningTooLong
+        expr: redis_active_defrag_running{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} == 1
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "Redis đang chạy defragmentation liên tục"
+          description: "Quá trình defrag đang chạy hơn 10 phút. Có thể đang dọn bộ nhớ hoặc có lỗi tối ưu hóa."
+
+      - alert: (Redis)-BlockedClients
+        expr: redis_blocked_clients{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis đang có client bị block"
+          description: "Một hoặc nhiều client đang bị block. Kiểm tra tình trạng pipeline hoặc slow command."
+
+      - alert: (Redis)-AOFWriteFailed
+        expr: redis_aof_last_write_status{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} == 0
         for: 30s
         labels:
-          severity: warning
+          severity: critical
         annotations:
-          summary: "Lỗi khi scrape Redis exporter"
-          description: "Prometheus không thể scrape dữ liệu từ Redis exporter lần gần nhất."
+          summary: "Redis ghi AOF thất bại"
+          description: "Trạng thái ghi AOF gần nhất không thành công. Cần kiểm tra lỗi ổ đĩa hoặc cấu hình."
 
-      # 3. Thời gian kết nối scrape quá cao
-      - alert: (RedisExporter)-ScrapeConnectTimeHigh
-        expr: redis_exporter_last_scrape_connect_time_seconds{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} > 1
-        for: 1m
+      - alert: (Redis)-AOFRewriteTooLong
+        expr: redis_aof_last_rewrite_duration_sec{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} > 300
+        for: 2m
         labels:
           severity: warning
         annotations:
-          summary: "Thời gian kết nối tới Redis exporter cao"
-          description: "Mất hơn 1 giây để kết nối tới Redis exporter. Có thể do mạng hoặc Redis phản hồi chậm."
+          summary: "Thời gian rewrite AOF quá dài"
+          description: "Quá trình rewrite AOF mất hơn 5 phút, có thể do AOF quá lớn hoặc thiếu tài nguyên hệ thống."
 
-      # 4. Thời gian scrape tổng quá cao
-      - alert: (RedisExporter)-ScrapeDurationHigh
-        expr: redis_exporter_last_scrape_duration_seconds{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} > 2
-        for: 1m
+      - alert: (Redis)-DefragmentationRunningTooLong
+        expr: redis_active_defrag_running{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} == 1
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "Redis đang defragment lâu"
+          description: "Redis đang chạy chống phân mảnh bộ nhớ liên tục hơn 10 phút."
+
+      - alert: (Redis)-MemoryFragmentationHigh
+        expr: redis_mem_fragmentation_ratio{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} > 1.5
+        for: 5m
         labels:
           severity: warning
         annotations:
-          summary: "Thời gian scrape Redis exporter cao"
-          description: "Thời gian scrape từ Prometheus vượt 2 giây. Có thể Redis phản hồi chậm hoặc exporter gặp vấn đề."
+          summary: "Tỷ lệ phân mảnh bộ nhớ cao"
+          description: "Tỷ lệ fragmentation > 1.5, bộ nhớ sử dụng không hiệu quả."
 
-      # 5. Tổng số lần lỗi scrape tăng
-      - alert: (RedisExporter)-TargetScrapeErrors
-        expr: increase(redis_target_scrape_request_errors_total{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'}[5m]) > 5
-        for: 1m
-        labels:
-          severity: warning
-        annotations:
-          summary: "Tăng số lần lỗi scrape Redis exporter"
-          description: "Prometheus gặp nhiều lỗi khi scrape Redis exporter trong 5 phút gần đây."
-
-      # 6. Số client đang được Redis giám sát
-      # - alert: (RedisExporter)-MonitoringClientHigh
-      #   expr: redis_monitoring_clients{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} > 10
-      #   for: 2m
-      #   labels:
-      #     severity: info
-      #   annotations:
-      #     summary: "Số lượng client được Redis giám sát cao"
-      #     description: "Hiện có hơn 10 client đang trong trạng thái MONITOR. Điều này có thể ảnh hưởng hiệu năng Redis."
-
-      # 7. Scrape không được cập nhật (đếm không tăng)
-      - alert: (RedisExporter)-ScrapeStuck
-        expr: rate(redis_exporter_scrapes_total{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'}[5m]) == 0
+      - alert: (Redis)-MemoryUsageNearLimit
+        expr: redis_memory_used_bytes{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} / redis_memory_max_bytes{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} > 0.9
         for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "Redis Exporter không được scrape"
-          description: "Không có scrape nào thành công từ Redis Exporter trong 5 phút qua."
+          summary: "Redis sắp đầy bộ nhớ"
+          description: "Bộ nhớ Redis đã dùng hơn 90% giới hạn `maxmemory`. Cần mở rộng hoặc dọn bộ nhớ."
+
+      - alert: (Redis)-ForkTooSlow
+        expr: redis_latest_fork_seconds{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} > 2
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Fork Redis mất thời gian dài"
+          description: "Fork Redis mất hơn 2 giây. Có thể ảnh hưởng đến hiệu năng khi lưu RDB hoặc AOF."
+
+      - alert: (Redis)-LoadingDumpFile
+        expr: redis_loading_dump_file{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} == 1
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "Redis đang load RDB"
+          description: "Redis đang trong quá trình khởi động và load file dump.rdb."
+
+      - alert: (Redis)-LazyFreeBacklogHigh
+        expr: redis_lazyfree_pending_objects{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} > 1000
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Nhiều object đang chờ lazyfree"
+          description: "Hệ thống có hơn 1000 đối tượng đang chờ giải phóng (lazyfree)."
+
+      - alert: (Redis)-ReplicaLag
+        expr: redis_master_repl_offset{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} < 1000
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Replica có độ trễ"
+          description: "Replication offset thấp, có thể replica không theo kịp master."
+
+      - alert: (Redis)-RSSMemoryTooHigh
+        expr: redis_memory_used_rss_bytes{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} > redis_memory_used_bytes{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} * 1.5
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Bộ nhớ RSS thực tế cao hơn nhiều so với memory logic"
+          description: "Có thể do phân mảnh hoặc leak bộ nhớ nội bộ Redis."
+
+      - alert: (Redis)-ScriptMemoryHigh
+        expr: redis_memory_used_scripts_bytes{job='[Redis-Server-Prod]-Metrics service -- dịch vụ'} > 50 * 1024 * 1024
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "Script Redis đang dùng nhiều bộ nhớ"
+          description: "Script Redis dùng hơn 50MB RAM. Có thể cần xem lại số lượng script lưu trữ."
