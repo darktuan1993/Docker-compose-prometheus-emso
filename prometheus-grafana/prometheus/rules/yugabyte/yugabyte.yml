@@ -20,7 +20,6 @@ groups:
       description: >
         ▸ Giá trị hiện tại:
           - {{ $value }} microseconds
-          - ~{{ printf "%.2f" ($value / 1000) }} milliseconds
 
 
   - alert: (Yugabyte)-LechGioHeThongMASTER
