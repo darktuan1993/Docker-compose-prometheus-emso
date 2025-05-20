@@ -18,10 +18,10 @@ groups:
     annotations:
       summary: "Sai số ước lượng giữa đồng hồ local và đồng hồ toàn cluster {{ $labels.instance }}"
       description: >
-        Node Master {{ $labels.instance }} có sai số thời gian (clock error) lớn hơn 500ms trong hơn 2 phút.
         ▸ Giá trị hiện tại:
           - {{ $value }} microseconds
-          - ~{{ printf "%.2f" (div $value 1000) }} milliseconds
+          - ~{{ printf "%.2f" ($value / 1000) }} milliseconds
+
 
   - alert: (Yugabyte)-LechGioHeThongMASTER
     expr: hybrid_clock_skew{job='[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ'} > 0
