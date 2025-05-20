@@ -1,0 +1,103 @@
+groups:
+  - name: elasticsearch
+    rules:
+      - alert: Elastic_UP
+        expr: elasticsearch_clusterinfo_up{job="[Elasticsearch-Service-DB-Prod]-Metrics service -- dịch vụ"} != 1
+        for: 2m
+        labels:
+          severity: alert
+          value: '{{$value}}'
+        annotations:
+          summary: "Instance {{ $labels.instance }}: Elasticsearch không hoạt động"
+          description: "Trạng thái của Elasticsearch instance có giá trị khác 1. Kiểm tra instance có đang chạy không."
+
+      - alert: Elastic_Cluster_Health_RED
+        expr: elasticsearch_cluster_health_status{color="red",job="[Elasticsearch-Service-DB-Prod]-Metrics service -- dịch vụ"} == 1
+        for: 5m
+        labels:
+          severity: alert
+          value: '{{$value}}'
+        annotations:
+          summary: "Instance {{ $labels.instance }}: Trạng thái cluster Elasticsearch là RED"
+          description: "Không phải tất cả shard chính và bản sao đều được phân bổ trong cluster Elasticsearch {{ $labels.cluster }}."
+
+      - alert: Elastic_Cluster_Health_Yellow
+        expr: elasticsearch_cluster_health_status{color="yellow",job="[Elasticsearch-Service-DB-Prod]-Metrics service -- dịch vụ"} == 1
+        for: 5m
+        labels:
+          severity: alert
+          value: '{{$value}}'
+        annotations:
+          summary: "Instance {{ $labels.instance }}: Trạng thái cluster Elasticsearch là YELLOW"
+          description: "Một số replica chưa được phân bổ trong cluster Elasticsearch {{ $labels.cluster }}."
+
+      - alert: Elasticsearch_JVM_Heap_Too_High
+        expr: elasticsearch_jvm_memory_used_bytes{area="heap",job="[Elasticsearch-Service-DB-Prod]-Metrics service -- dịch vụ"} / elasticsearch_jvm_memory_max_bytes{area="heap",job="[Elasticsearch-Service-DB-Prod]-Metrics service -- dịch vụ"} > 0.8
+        for: 15m
+        labels:
+          severity: alert
+          value: '{{$value}}'
+        annotations:
+          summary: "Elasticsearch heap trên node {{ $labels.instance }} sử dụng cao"
+          description: "Heap trên {{ $labels.instance }} vượt quá 80% trong 15 phút."
+
+      - alert: Elasticsearch_health_up
+        expr: elasticsearch_cluster_health_up != 1
+        for: 1m
+        labels:
+          severity: alert
+          value: '{{$value}}'
+        annotations:
+          summary: "Node {{ $labels.instance }}: lỗi khi scrape trạng thái cluster"
+          description: "Không thể scrape thông tin cluster health từ node {{ $labels.instance }}."
+
+      # - alert: Elasticsearch_Too_Few_Nodes_Running
+      #   expr: elasticsearch_cluster_health_number_of_nodes < 3
+      #   for: 5m
+      #   labels:
+      #     severity: alert
+      #     value: '{{$value}}'
+      #   annotations:
+      #     summary: "Elasticsearch đang chạy trên ít hơn 3 node"
+      #     description: "Chỉ có {{$value}} node Elasticsearch đang chạy (dưới 3 node)."
+
+      - alert: Elasticsearch_Count_of_JVM_GC_Runs
+        expr: rate(elasticsearch_jvm_gc_collection_seconds_count[5m]{job="[Elasticsearch-Service-DB-Prod]-Metrics service -- dịch vụ"}) > 5
+        for: 1m
+        labels:
+          severity: warning
+          value: '{{$value}}'
+        annotations:
+          summary: "Node {{ $labels.instance }}: Số lần chạy GC cao"
+          description: "GC trên JVM của Elasticsearch chạy > 5 lần mỗi giây. Giá trị hiện tại: {{ $value }}."
+
+      - alert: Elasticsearch_GC_Run_Time
+        expr: rate(elasticsearch_jvm_gc_collection_seconds_sum{job="[Elasticsearch-Service-DB-Prod]-Metrics service -- dịch vụ"}[5m]) > 0.3
+        for: 1m
+        labels:
+          severity: warning
+          value: '{{$value}}'
+        annotations:
+          summary: "Node {{ $labels.instance }}: GC mất nhiều thời gian"
+          description: "Thời gian chạy GC > 0.3 giây trong 5 phút gần đây. Giá trị: {{ $value }}."
+
+      - alert: Elasticsearch_json_parse_failures
+        expr: elasticsearch_cluster_health_json_parse_failures{job="[Elasticsearch-Service-DB-Prod]-Metrics service -- dịch vụ"} > 0
+        for: 1m
+        labels:
+          severity: warning
+          value: '{{$value}}'
+        annotations:
+          summary: "Node {{ $labels.instance }}: lỗi parse JSON khi kiểm tra cluster health"
+          description: "Có lỗi khi parse JSON cluster health (số lỗi > 0). Giá trị: {{ $value }}."
+
+
+      - alert: Elasticsearch_health_timed_out
+        expr: elasticsearch_cluster_health_timed_out > 0
+        for: 1m
+        labels:
+          severity: warning
+          value: '{{$value}}'
+        annotations:
+          summary: "Node {{ $labels.instance }}: kiểm tra cluster health bị timeout"
+          description: "Có kiểm tra cluster health bị timeout. Số lần timeout > 0. Giá trị: {{ $value }}."

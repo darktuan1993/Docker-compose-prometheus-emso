@@ -8,10 +8,11 @@ global:
 
 rule_files:
   - "./rules/node/node.yml"
-  # - "./rules/yugabyte/yugabyte.yml"
-  # - "./rules/redis/redis-alerts.yml"
+  - "./rules/yugabyte/yugabyte.yml"
+  - "./rules/redis/redis-alerts.yml"
+  - "./rules/elasticsearch/es.yml"
   # - "./rules/postgres/pg_alerts.yml"
-
+  - "./rules/kafka/kafka.yml"
 # ALERTING 
 
 # alerting:
