@@ -176,7 +176,6 @@ scrape_configs:
     static_configs:
       - targets:
           # redis-prod-primary
-          - "172.16.0.225:9121"
           - "172.16.0.72:9121"
           - "172.16.0.123:9121"
           - "172.16.0.86:9121"
