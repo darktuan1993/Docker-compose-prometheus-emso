@@ -56,14 +56,14 @@ groups:
       #     summary: "Elasticsearch đang chạy trên ít hơn 3 node"
       #     description: "Chỉ có {{$value}} node Elasticsearch đang chạy (dưới 3 node)."
 
-      - alert: Elasticsearch_Count_of_JVM_GC_Runs
-        expr: rate(elasticsearch_jvm_gc_collection_seconds_count[5m]{job="[Elasticsearch-Service-DB-Prod]-Metrics service -- dịch vụ"}) > 5
-        for: 1m
-        labels:
-          severity: warning
-        annotations:
-          summary: "Node {{ $labels.instance }}: Số lần chạy GC cao"
-          description: "GC trên JVM của Elasticsearch chạy > 5 lần mỗi giây. Giá trị hiện tại: {{ $value }}."
+      # - alert: Elasticsearch_Count_of_JVM_GC_Runs
+      #   expr: rate(elasticsearch_jvm_gc_collection_seconds_count[5m]{job="[Elasticsearch-Service-DB-Prod]-Metrics service -- dịch vụ"}) > 5
+      #   for: 1m
+      #   labels:
+      #     severity: warning
+      #   annotations:
+      #     summary: "Node {{ $labels.instance }}: Số lần chạy GC cao"
+      #     description: "GC trên JVM của Elasticsearch chạy > 5 lần mỗi giây. Giá trị hiện tại: {{ $value }}."
 
       - alert: Elasticsearch_GC_Run_Time
         expr: rate(elasticsearch_jvm_gc_collection_seconds_sum{job="[Elasticsearch-Service-DB-Prod]-Metrics service -- dịch vụ"}[5m]) > 0.3
