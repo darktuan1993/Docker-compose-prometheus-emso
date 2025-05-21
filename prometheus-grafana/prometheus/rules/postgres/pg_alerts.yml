@@ -2,13 +2,13 @@ groups:
   - name: POSTGRES Alerts
     rules:
       - alert: PostgresqlDown
-        expr: pg_up == 0
+        expr: pg_up == 1
         for: 0m
         labels:
           severity: critical
         annotations:
-          summary: Postgresql down (instance {{ $labels.instance }})
-          description: "Postgresql instance is down\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+          summary: Postgresql down
+          description: "Postgresql instance is down"
 
       - alert: PostgresqlRestarted
         expr: time() - pg_postmaster_start_time_seconds < 60
@@ -17,7 +17,7 @@ groups:
           severity: critical
         annotations:
           summary: Postgresql restarted (instance {{ $labels.instance }})
-          description: "Postgresql restarted\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+          description: "Postgresql restarted"
 
 
       - alert: PostgresqlExporterError
