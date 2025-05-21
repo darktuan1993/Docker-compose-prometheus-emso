@@ -43,7 +43,7 @@ route:
       repeat_interval: 1h
 
     - match_re:
-        job: "[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ|[Redis-Cluster-Prod]-Metrics service -- dịch vụ|[Redis-Server-Prod]-Metrics service -- dịch vụ|[Gorse-Service-DB-Prod]-Metrics service REDIS -- dịch vụ|[Elasticsearch-Service-DB-Prod]-Metrics service ELASTICSEARCH -- dịch vụ|[Chat-Service-DB-Prod]-Metrics service MONGODB -- dịch vụ|[Kafka-Service-Prod]-Metrics service -- dịch vụ|[Notification-Service-DB-Prod]-Metrics service MONGODB -- dịch vụ |[Pt-Service-DB-Prod]-Metrics service POSTGRES -- dịch vụ|"
+        job: "Elasticsearch-Service-DB-Prod-Metrics-service|Gorse-Service-DB-Prod-Metrics-service-POSTGRES|Gorse-Service-DB-Prod-Metrics-service-REDIS|Pt-Service-DB-Prod-Metrics-service-POSTGRES|Chat-Service-DB-Prod-Metrics-service-MONGODB|Notification-Service-DB-Prod-Metrics-service-MONGODB|Redis-Server-Prod-Metrics-service|Redis-Cluster-Prod-Metrics-service|YugabyteDB-Service-Prod-Metrics-service"
       receiver: database-telegram
       group_wait: 30s
       group_interval: 5m
