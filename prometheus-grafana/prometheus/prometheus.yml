@@ -36,7 +36,7 @@ scrape_configs:
         labels:
           export_type: "elastic_node_export"
 
-  - job_name: "[Elasticsearch-Service-DB-Prod]-Metrics service -- dịch vụ"
+  - job_name: "[Elasticsearch-Service-DB-Prod]-Metrics service ELASTICSEARCH -- dịch vụ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -88,7 +88,7 @@ scrape_configs:
         labels:
           export_type: "pt_node_export"
 
-  - job_name: "[Pt-Service-DB-Prod]-Metrics service -- dịch vụ"
+  - job_name: "[Pt-Service-DB-Prod]-Metrics service POSTGRES -- dịch vụ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -107,7 +107,7 @@ scrape_configs:
         labels:
           export_type: "chat_node_export"
 
-  - job_name: "[Chat-Service-DB-Prod]-Metrics service -- dịch vụ"
+  - job_name: "[Chat-Service-DB-Prod]-Metrics service MONGODB -- dịch vụ"
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
@@ -126,7 +126,7 @@ scrape_configs:
         labels:
           export_type: "notification_node_export"
 
-  - job_name: "[Notification-Service-DB-Prod]-Metrics service -- dịch vụ "
+  - job_name: "[Notification-Service-DB-Prod]-Metrics service MONGODB -- dịch vụ "
     scrape_interval: 5s
     metrics_path: /metrics
     static_configs:
