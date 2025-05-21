@@ -13,6 +13,7 @@ rule_files:
   - "./rules/elasticsearch/es.yml"
   # - "./rules/postgres/pg_alerts.yml"
   - "./rules/kafka/kafka.yml"
+  - "./rules/mongodb/mongodb.yml"
 # ALERTING 
 
 # alerting:

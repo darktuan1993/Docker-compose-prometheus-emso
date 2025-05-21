@@ -1,222 +1,221 @@
 groups:
-- name: server-yugabyte
-  rules:
-        - alert: (Yugabyte)-Active
-          expr: up{job='[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ'} == 0
-          for: 2m
-          labels:
-            severity: critical
-          annotations:
-            summary: "Node{{ $labels.instance }} không phản hồi"
-            description: "Node {{ $labels.instance }} đã không phản hồi trong 2 phút. Kiểm tra kết nối hoặc trạng thái dịch vụ."
+  - name: server-yugabyte
+    rules:
+      - alert: Yugabyte_Active
+        expr: up{job="[YugabyteDB-Service-Prod]-Metrics-service"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node {{ $labels.instance }} không phản hồi"
+          description: "Node {{ $labels.instance }} đã không phản hồi trong 2 phút. Kiểm tra kết nối hoặc trạng thái dịch vụ."
 
-        - alert: (Yugabyte)-TimeError
-          expr: hybrid_clock_error{job='[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ'} > 500000
-          for: 2m
-          labels:
-            severity: critical
-          annotations:
-            summary: "Sai số ước lượng giữa đồng hồ local và đồng hồ toàn cluster {{ $labels.instance }}"
-            description: >
-              ▸ Giá trị hiện tại:
-                - {{ $value }} microseconds
+      - alert: Yugabyte_TimeError
+        expr: hybrid_clock_error{job="[YugabyteDB-Service-Prod]-Metrics-service"} > 500000
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Sai số ước lượng đồng hồ tại {{ $labels.instance }}"
+          description: |
+            ▸ Giá trị hiện tại: {{ $value }} microseconds
 
+      - alert: Yugabyte_ClockSkew_Master
+        expr: hybrid_clock_skew{job="[YugabyteDB-Service-Prod]-Metrics-service"} > 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Sai lệch đồng hồ trên Master {{ $labels.instance }}"
+          description: |
+            Node Master {{ $labels.instance }} có sai lệch thời gian (clock skew) lớn hơn 50ms trong hơn 2 phút.
+            ▸ Giá trị hiện tại: {{ $value }} microseconds
 
-        - alert: (Yugabyte)-LechGioHeThongMASTER
-          expr: hybrid_clock_skew{job='[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ'} > 0
-          for: 2m
-          labels:
-            severity: critical
-          annotations:
-            summary: "Sai lệch đồng hồ trên node Master {{ $labels.instance }} vượt quá giới hạn"
-            description: >
-              Node Master {{ $labels.instance }} có sai lệch thời gian (clock skew) lớn hơn 50ms trong hơn 2 phút. Điều này có thể ảnh hưởng tới việc đồng bộ dữ liệu, tính nhất quán, hoặc gây lỗi giao dịch phân tán.
-              ▸ Giá trị hiện tại: {{ $value }} microseconds
-
-        - alert: (Yugabyte)-YSQLKetNoiMoiTangDotBien
-          expr: rate(yb_ysqlserver_new_connection_total{job='[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ'}[5m]) > 50
-          for: 2m
-          labels:
-            severity: warning
-          annotations:
-            summary: "Tốc độ tạo kết nối mới tới YSQL trên {{ $labels.instance }} cao bất thường"
-            description: >
-              Node {{ $labels.instance }} đang tạo hơn 50 kết nối mới mỗi giây tới YSQL trong 5 phút qua. Điều này có thể do ứng dụng không sử dụng connection pool hoặc bị truy cập bất thường.
-              ▸ Tốc độ kết nối hiện tại: {{ $value }} kết nối/giây
-
-        - alert: (Yugabyte)-YSQLKetNoiHienTaiCao
-          expr: yb_ysqlserver_connection_total{job='[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ'} > 800
-          for: 2m
-          labels:
-            severity: warning
-          annotations:
-            summary: "Số kết nối YSQL trên {{ $labels.instance }} đang ở mức cao"
-            description: >
-              Node {{ $labels.instance }} đang duy trì hơn 800 kết nối tới YSQL trong hơn 2 phút. Có thể do ứng dụng giữ kết nối quá lâu hoặc không dùng pool.
-              ▸ Số kết nối hiện tại: {{ $value }}
-
-        - alert: (Yugabyte)-YSQLBiTuChoiKetNoi
-          expr: rate(yb_ysqlserver_connection_over_limit_total{job='[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ'}[5m]) > 0
-          for: 1m
-          labels:
-            severity: critical
-          annotations:
-            summary: "YSQL trên node {{ $labels.instance }} đang từ chối kết nối mới"
-            description: >
-              Node {{ $labels.instance }} đang từ chối các kết nối YSQL vì đã vượt quá giới hạn max_connections trong 5 phút gần đây.
-              ▸ Số lần từ chối mỗi giây: {{ $value }}
-
-        - alert: (Yugabyte)TangDotBienSoLuongBangTrongSchema
-          expr: increase(ycql_queries_system_schema_tables_count{job='[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ'}[5m]) > 5
-          for: 1m
-          labels:
-            severity: warning
-          annotations:
-            summary: "Tăng đột biến số lượng bảng"
-            description: "Số lượng bảng trong schema tăng hơn 5 bảng trong 5 phút."
-
-        - alert: (Yugabyte)TangDotBienSoLuongViewTrongSchema
-          expr: increase(ycql_queries_system_schema_views_count{job='[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ'}[5m]) > 3
-          for: 1m
-          labels:
-            severity: warning
-          annotations:
-            summary: "Tăng đột biến số lượng view"
-            description: "Có nhiều view mới được tạo trong 5 phút."
-
-        - alert: (Yugabyte)TangDotBienTriggersTrongSchema
-          expr: increase(ycql_queries_system_schema_triggers_count{job='[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ'}[5m]) > 3
-          for: 1m
-          labels:
-            severity: warning
-          annotations:
-            summary: "Tăng đột biến số lượng triggers"
-            description: "Có nhiều triggers mới được tạo. Cần kiểm tra schema."
-
-        - alert: (Yugabyte)TangDotBienTypesTrongSchema
-          expr: increase(ycql_queries_system_schema_types_count{job='[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ'}[5m]) > 2
-          for: 1m
-          labels:
-            severity: warning
-          annotations:
-            summary: "Tăng đột biến số lượng types"
-            description: "Schema types tăng bất thường trong 5 phút."
-
-        - alert: (Yugabyte)TangDotBienUocLuongKichThuoc
-          expr: increase(ycql_queries_system_size_estimates_count{job='[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ'}[5m]) > 5
-          for: 2m
-          labels:
-            severity: warning
-          annotations:
-            summary: "Kích thước hệ thống tăng bất thường"
-            description: "Có thể do insert nhiều dữ liệu hoặc load test."
-
-        - alert: (Yugabyte)SoLuongYSQLConnectionPoolQuaCao
-          expr: ysql_conn_mgr_num_pools{job='[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ'} > 100
-          for: 2m
-          labels:
-            severity: critical
-          annotations:
-            summary: "Số lượng connection pool cao"
-            description: "Có thể do leak hoặc không đóng kết nối đúng cách."
-        # ALERT RULES CHO master_export
-        - alert: (YSQL-MASTER)-ExporterDown
-          expr: pg_up{job="[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ", export_type="master_export"} == 0
-          for: 1m
-          labels:
-            severity: critical
-          annotations:
-            summary: "Exporter trên master không phản hồi"
-            description: "pg_up == 0 trên node master_export. Kiểm tra exporter hoặc dịch vụ."
-
-      - alert: (YSQL-MASTER)-ScrapeError
-        expr: pg_exporter_last_scrape_error{job="[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ", export_type="master_export"} == 1
-        for: 30s
+      - alert: Yugabyte_YSQL_NewConnectionsSpike
+        expr: rate(yb_ysqlserver_new_connection_total{job="[YugabyteDB-Service-Prod]-Metrics-service"}[5m]) > 50
+        for: 2m
         labels:
           severity: warning
         annotations:
-          summary: "Lỗi scrape trên master_export"
-          description: "Prometheus gặp lỗi khi scrape dữ liệu exporter từ master_export."
+          summary: "Tốc độ tạo kết nối mới YSQL tăng cao"
+          description: |
+            Node {{ $labels.instance }} đang tạo > 50 kết nối mới mỗi giây. Có thể do không dùng connection pool hoặc truy cập bất thường.
+            ▸ Tốc độ kết nối hiện tại: {{ $value }} kết nối/giây
 
-      - alert: (YSQL-MASTER)-ScrapeDurationHigh
-        expr: pg_exporter_last_scrape_duration_seconds{job="[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ", export_type="master_export"} > 2
-        for: 1m
+      - alert: Yugabyte_YSQL_ConnectionsHigh
+        expr: yb_ysqlserver_connection_total{job="[YugabyteDB-Service-Prod]-Metrics-service"} > 800
+        for: 2m
         labels:
           severity: warning
         annotations:
-          summary: "Thời gian scrape cao trên master"
-          description: "Scrape exporter mất hơn 2 giây. Có thể hệ thống đang quá tải hoặc có vấn đề mạng."
+          summary: "Số lượng kết nối YSQL cao trên {{ $labels.instance }}"
+          description: |
+            Node {{ $labels.instance }} duy trì > 800 kết nối tới YSQL. Có thể ứng dụng giữ kết nối quá lâu hoặc không dùng pool.
+            ▸ Số kết nối hiện tại: {{ $value }}
 
-      # ALERT RULES CHO tserver_export
-      - alert: (YSQL-TSERVER)-ExporterDown
-        expr: pg_up{job="[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ", export_type="tserver_export"} == 0
+      - alert: Yugabyte_YSQL_ConnectionRejected
+        expr: rate(yb_ysqlserver_connection_over_limit_total{job="[YugabyteDB-Service-Prod]-Metrics-service"}[5m]) > 0
         for: 1m
         labels:
           severity: critical
         annotations:
-          summary: "Exporter trên tserver không phản hồi"
-          description: "pg_up == 0 trên node tserver_export. Kiểm tra exporter hoặc container."
+          summary: "YSQL từ chối kết nối trên {{ $labels.instance }}"
+          description: |
+            Đã vượt max_connections trong 5 phút gần đây.
+            ▸ Số lần từ chối mỗi giây: {{ $value }}
 
-      - alert: (YSQL-TSERVER)-ScrapeError
-        expr: pg_exporter_last_scrape_error{job="[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ", export_type="tserver_export"} == 1
+      - alert: Yugabyte_Schema_TablesSpike
+        expr: increase(ycql_queries_system_schema_tables_count{job="[YugabyteDB-Service-Prod]-Metrics-service"}[5m]) > 5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Tăng đột biến bảng trong schema"
+          description: "Tăng > 5 bảng trong 5 phút."
+
+      - alert: Yugabyte_Schema_ViewsSpike
+        expr: increase(ycql_queries_system_schema_views_count{job="[YugabyteDB-Service-Prod]-Metrics-service"}[5m]) > 3
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Tăng đột biến view trong schema"
+          description: "Tăng > 3 view trong 5 phút."
+
+      - alert: Yugabyte_Schema_TriggersSpike
+        expr: increase(ycql_queries_system_schema_triggers_count{job="[YugabyteDB-Service-Prod]-Metrics-service"}[5m]) > 3
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Tăng đột biến trigger trong schema"
+          description: "Tăng > 3 trigger trong 5 phút."
+
+      - alert: Yugabyte_Schema_TypesSpike
+        expr: increase(ycql_queries_system_schema_types_count{job="[YugabyteDB-Service-Prod]-Metrics-service"}[5m]) > 2
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Tăng đột biến types trong schema"
+          description: "Tăng > 2 types trong 5 phút."
+
+      - alert: Yugabyte_SystemSizeEstimatesSpike
+        expr: increase(ycql_queries_system_size_estimates_count{job="[YugabyteDB-Service-Prod]-Metrics-service"}[5m]) > 5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kích thước hệ thống tăng bất thường"
+          description: "Có thể do insert dữ liệu lớn hoặc test hiệu năng."
+
+      - alert: Yugabyte_YSQL_ConnectionPoolHigh
+        expr: ysql_conn_mgr_num_pools{job="[YugabyteDB-Service-Prod]-Metrics-service"} > 100
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Số lượng connection pool cao"
+          description: "Có thể do leak kết nối hoặc không đóng đúng cách."
+
+      # MASTER EXPORTER ALERTS
+      - alert: Yugabyte_Master_ExporterDown
+        expr: pg_up{job="[YugabyteDB-Service-Prod]-Metrics-service", export_type="master_export"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Exporter master không phản hồi"
+          description: "pg_up == 0 trên exporter master."
+
+      - alert: Yugabyte_Master_ScrapeError
+        expr: pg_exporter_last_scrape_error{job="[YugabyteDB-Service-Prod]-Metrics-service", export_type="master_export"} == 1
         for: 30s
         labels:
           severity: warning
         annotations:
-          summary: "Lỗi scrape trên tserver_export"
-          description: "Prometheus gặp lỗi khi scrape dữ liệu exporter từ tserver_export."
+          summary: "Lỗi scrape exporter master"
+          description: "Prometheus gặp lỗi khi scrape dữ liệu từ master_export."
 
-      - alert: (YSQL-TSERVER)-ScrapeDurationHigh
-        expr: pg_exporter_last_scrape_duration_seconds{job="[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ", export_type="tserver_export"} > 2
+      - alert: Yugabyte_Master_ScrapeDurationHigh
+        expr: pg_exporter_last_scrape_duration_seconds{job="[YugabyteDB-Service-Prod]-Metrics-service", export_type="master_export"} > 2
         for: 1m
         labels:
           severity: warning
         annotations:
-          summary: "Thời gian scrape cao trên tserver"
-          description: "Scrape exporter mất hơn 2 giây. Có thể hệ thống đang quá tải hoặc có vấn đề mạng."
+          summary: "Scrape exporter master chậm"
+          description: "Mất hơn 2 giây để scrape dữ liệu từ master_export."
 
-      - alert: (YSQL-TSERVER)-CacheHitRateLow
-        expr: rate(pg_response_cache_hits{job="[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ", export_type="tserver_export"}[5m])
-              / rate(pg_response_cache_queries{job="[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ", export_type="tserver_export"}[5m]) < 0.3
+      # TSERVER EXPORTER ALERTS
+      - alert: Yugabyte_TServer_ExporterDown
+        expr: pg_up{job="[YugabyteDB-Service-Prod]-Metrics-service", export_type="tserver_export"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Exporter tserver không phản hồi"
+          description: "pg_up == 0 trên exporter tserver."
+
+      - alert: Yugabyte_TServer_ScrapeError
+        expr: pg_exporter_last_scrape_error{job="[YugabyteDB-Service-Prod]-Metrics-service", export_type="tserver_export"} == 1
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "Lỗi scrape exporter tserver"
+          description: "Prometheus gặp lỗi khi scrape dữ liệu từ tserver_export."
+
+      - alert: Yugabyte_TServer_ScrapeDurationHigh
+        expr: pg_exporter_last_scrape_duration_seconds{job="[YugabyteDB-Service-Prod]-Metrics-service", export_type="tserver_export"} > 2
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Scrape exporter tserver chậm"
+          description: "Mất hơn 2 giây để scrape dữ liệu từ tserver_export."
+
+      - alert: Yugabyte_TServer_CacheHitRateLow
+        expr: rate(pg_response_cache_hits{job="[YugabyteDB-Service-Prod]-Metrics-service", export_type="tserver_export"}[5m])
+              / rate(pg_response_cache_queries{job="[YugabyteDB-Service-Prod]-Metrics-service", export_type="tserver_export"}[5m]) < 0.3
         for: 3m
         labels:
           severity: warning
         annotations:
-          summary: "Tỷ lệ hit cache thấp trên TServer"
-          description: "Tỷ lệ cache hit dưới 30% trong 5 phút. Có thể ảnh hưởng hiệu năng đọc."
+          summary: "Tỷ lệ hit cache thấp"
+          description: "Tỷ lệ hit dưới 30% trong 5 phút."
 
-      - alert: (YSQL-TSERVER)-CacheEntriesHigh
-        expr: pg_response_cache_entries{job="[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ", export_type="tserver_export"} > 10000
+      - alert: Yugabyte_TServer_CacheEntriesHigh
+        expr: pg_response_cache_entries{job="[YugabyteDB-Service-Prod]-Metrics-service", export_type="tserver_export"} > 10000
         for: 5m
         labels:
           severity: info
         annotations:
-          summary: "Số lượng entries cache cao trên TServer"
-          description: "Số lượng bản ghi trong cache vượt 10,000. Cần xem xét cleanup."
+          summary: "Số lượng entries cache cao"
+          description: "Cache entries > 10,000. Kiểm tra cleanup."
 
-      - alert: (YSQL-TSERVER)-CacheGCSpike
-        expr: increase(pg_response_cache_gc_calls{job="[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ", export_type="tserver_export"}[5m]) > 50
+      - alert: Yugabyte_TServer_CacheGCSpike
+        expr: increase(pg_response_cache_gc_calls{job="[YugabyteDB-Service-Prod]-Metrics-service", export_type="tserver_export"}[5m]) > 50
         for: 1m
         labels:
           severity: warning
         annotations:
-          summary: "Số lần gọi GC cache tăng trên TServer"
-          description: "Garbage collection cache xảy ra quá nhiều lần trong thời gian ngắn."
+          summary: "GC cache tăng mạnh"
+          description: "Số lần GC cache > 50 trong 5 phút."
 
-      - alert: (YSQL-TSERVER)-CacheDisableSpike
-        expr: increase(pg_response_cache_disable_calls{job="[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ", export_type="tserver_export"}[5m]) > 5
+      - alert: Yugabyte_TServer_CacheDisableSpike
+        expr: increase(pg_response_cache_disable_calls{job="[YugabyteDB-Service-Prod]-Metrics-service", export_type="tserver_export"}[5m]) > 5
         for: 1m
         labels:
           severity: info
         annotations:
-          summary: "Cache bị disable đột biến trên TServer"
-          description: "Có nhiều lần gọi vô hiệu hóa cache. Cần kiểm tra ứng dụng hoặc config."
+          summary: "Vô hiệu hóa cache tăng"
+          description: "Có nhiều lần cache bị disable bất thường."
 
-      - alert: (YSQL-TSERVER)-ResponseCacheQuerySpike
-        expr: increase(pg_response_cache_queries{job="[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ", export_type="tserver_export"}[5m]) > 1000
+      - alert: Yugabyte_TServer_CacheQueriesSpike
+        expr: increase(pg_response_cache_queries{job="[YugabyteDB-Service-Prod]-Metrics-service", export_type="tserver_export"}[5m]) > 1000
         for: 1m
         labels:
           severity: info
         annotations:
-          summary: "Truy vấn cache tăng đột biến"
-          description: "Truy vấn thông qua cache tăng nhanh, có thể do truy cập lớn hoặc batch xử lý."
+          summary: "Tăng đột biến truy vấn cache"
+          description: "Số truy vấn cache tăng > 1000 trong 5 phút."
