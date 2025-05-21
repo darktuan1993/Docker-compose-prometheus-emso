@@ -8,11 +8,11 @@ receivers:
 
 - name: k8s-telegram
   webhook_configs:
-  - url: 'http://172.16.0.225:32803/alert/-4661808872'
+  - url: 'http://172.16.0.225:32803/alert/-4972407237'
 
 - name: database-telegram
   webhook_configs:
-  - url: 'http://172.16.0.225:32804/alert/-4718226698'
+  - url: 'http://172.16.0.225:32804/alert/-4828054469'
 
 
 - name: null-receiver
@@ -43,25 +43,11 @@ route:
       repeat_interval: 1h
 
     - match_re:
-        job: "yugabytedb|node_prefix"
+        job: "[YugabyteDB-Service-Prod]-Metrics service -- dịch vụ|[Redis-Cluster-Prod]-Metrics service -- dịch vụ|[Redis-Server-Prod]-Metrics service -- dịch vụ|[Gorse-Service-DB-Prod]-Metrics service REDIS -- dịch vụ|[Elasticsearch-Service-DB-Prod]-Metrics service ELASTICSEARCH -- dịch vụ|[Chat-Service-DB-Prod]-Metrics service MONGODB -- dịch vụ|[Kafka-Service-Prod]-Metrics service -- dịch vụ|[Notification-Service-DB-Prod]-Metrics service MONGODB -- dịch vụ |[Pt-Service-DB-Prod]-Metrics service POSTGRES -- dịch vụ|"
       receiver: database-telegram
-      # group_wait: 30s
-      # group_interval: 5m
-      # repeat_interval: 1h
-
-    - match_re:
-        job: "redis-exporter|app|env"
-      receiver: database-telegram
-      # group_wait: 30s
-      # group_interval: 5m
-      # repeat_interval: 1h
-
-    - match_re:
-        job: "postgres-exporter|app|env"
-      receiver: database-telegram
-      # group_wait: 30s
-      # group_interval: 5m
-      # repeat_interval: 1h
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 1h
 
 
 
