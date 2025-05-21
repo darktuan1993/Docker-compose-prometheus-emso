@@ -13,17 +13,19 @@ rule_files:
   - "./rules/elasticsearch/es.yml"
   - "./rules/postgres/pg_alerts.yml"
   - "./rules/kafka/kafka.yml"
-  - "./rules/mongodb/mongodb.yml"
+  - "./rules/mongodb/mongo.yml"
+  
+
 # ALERTING 
 
-# alerting:
-#   alertmanagers:
-#     - scheme: http
-#       static_configs:
-#         - targets: ["172.16.0.225:32801"]
-#       basic_auth:
-#         username: admin
-#         password: Emso@Uddnfk2334
+alerting:
+  alertmanagers:
+    - scheme: http
+      static_configs:
+        - targets: ["172.16.0.225:32801"]
+      basic_auth:
+        username: admin
+        password: Emso@Uddnfk2334
 
 scrape_configs:
  
